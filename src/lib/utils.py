@@ -2,6 +2,7 @@ import logging
 import traceback
 import lib.constants as constants
 
+
 # Calculates the verbosity level.
 def calculate_verbosity(args) -> int:
     if args.verbose is not None:
@@ -10,6 +11,7 @@ def calculate_verbosity(args) -> int:
         return 0
     else:
         return 1
+
 
 def print_unknown_exception_catch(logging_file_name):
     logging.critical(
