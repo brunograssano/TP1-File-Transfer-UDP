@@ -26,7 +26,7 @@ def set_download_parser():
 
 def main() -> None:
     try:
-        # Setear Logger
+        # Seteo archivo de logs
         logging.basicConfig(
             filename=constants.LOGGING_FILE,
             level=logging.DEBUG,
