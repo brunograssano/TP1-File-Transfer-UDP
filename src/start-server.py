@@ -1,5 +1,5 @@
 import argparse
-
+"""
 parser = argparse.ArgumentParser(description='Start the fileserver and listen for clients.')
 
 exclusives = parser.add_mutually_exclusive_group()
@@ -24,3 +24,16 @@ parser.add_argument('-s', '--storage', action='store',nargs=1,
 
 args = parser.parse_args()
 print(args)
+"""
+
+from socket import *
+
+serverPort = 12000
+serverSocket = socket(AF_INET, SOCK_DGRAM)
+
+serverSocket.bind(("", serverPort))
+print("The server is ready to receive")
+while True:
+    message, clientAddress = serverSocket.recvfrom(2048)
+    modifiedMessage = message.decode().upper()
+    serverSocket.sendto(modifiedMessage.encode(), clientAddress)
