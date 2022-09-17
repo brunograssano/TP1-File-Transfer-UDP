@@ -1,9 +1,9 @@
 import sys
 import logging
 import argparse
-import constants
+import lib.constants as constants
+import lib.utils as utils
 
-LOGGING_FILE = "logfile_download.txt"
 
 def set_download_parser():
     parser = argparse.ArgumentParser(description="description: Downloads a\
@@ -23,21 +23,34 @@ def set_download_parser():
                         metavar="FILENAME", help="file name")
     return parser
 
-def download_file() -> None:
-    #try:
-    # Setear Logger
-    logging.basicConfig(filename=LOGGING_FILE, level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s', datefmt='%H:%M:%S')
 
-    parser = set_download_parser()
-    args = parser.parse_args()
-    print(args)
-    #! calcular nivel de verbosity
-    #! validar protocolo
-    #! obtener cliente
-    #! descargar archivo
-    #! manejar errores
-    return
+def main() -> None:
+    try:
+        # Seteo archivo de logs
+        logging.basicConfig(
+            filename=constants.LOGGING_FILE,
+            level=logging.DEBUG,
+            format='%(asctime)s %(levelname)s %(message)s',
+            datefmt='%H:%M:%S'
+        )
+
+        parser = set_download_parser()
+        args = parser.parse_args()
+        print(args)
+        verbosity_level = utils.calculate_verbosity(args)
+        print(verbosity_level)
+        # todo chequear que tengo espacio para guardar
+        # el archivo que quiero descargar
+
+        # todo validar protocolo
+        # todo obtener cliente
+        # todo descargar archivo
+        sys.exit(0)
+    # !manejo errores
+    except Exception:
+        utils.print_unknown_exception_catch(constants.LOGGING_FILE)
+        sys.exit(1)
 
 
 if __name__ == '__main__':
-    download_file()
+    main()
