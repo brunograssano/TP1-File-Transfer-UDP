@@ -1,6 +1,6 @@
 import unittest
-from rdtp_segment import RDTPSegment, from_bytes
-from src.lib.headers import rdtp_header as h
+from RDTPSegment import RDTPSegment
+from headers import RDTPHeader as h
 
 class TestHeader(unittest.TestCase):
     def test_as_binary_string(self):

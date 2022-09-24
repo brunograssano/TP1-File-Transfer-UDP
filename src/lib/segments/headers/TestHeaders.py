@@ -1,5 +1,5 @@
 import unittest
-from rdtp_header import RDTPHeader, from_bytes
+from headers.RDTPHeader import RDTPHeader, from_bytes
 
 class TestHeader(unittest.TestCase):
     def test_as_binary_string(self):

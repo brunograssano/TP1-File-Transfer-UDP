@@ -1,4 +1,4 @@
-from src.lib.headers import rdtp_header as h
+from headers import RDTPHeader as h
 
 class RDTPSegment:
     def __init__(self, data, header):
