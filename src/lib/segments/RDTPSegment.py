@@ -9,12 +9,12 @@ class RDTPSegment:
         header_bytes = self.header.as_bytes()
         return header_bytes + self.data
 
-@staticmethod
-def from_bytes(bytes):
-    header_size = h.size() 
-    header_bytes = bytes[:header_size]
-    rdtp_header = h.from_bytes(header_bytes)
+    @staticmethod
+    def from_bytes(bytes):
+        header_size = h.size()
+        header_bytes = bytes[:header_size]
+        rdtp_header = h.from_bytes(header_bytes)
 
-    data = bytes[header_size:]
+        data = bytes[header_size:]
 
-    return RDTPSegment(data, rdtp_header)
+        return RDTPSegment(data, rdtp_header)
