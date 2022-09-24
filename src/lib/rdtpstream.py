@@ -6,13 +6,19 @@ class RDTPStream():
         self.port = port
         self.socket = socket(AF_INET, SOCK_DGRAM)
 
-    def bind(self):
-        self.socket.bind((self.host, self.port))
+    def bind(self, peer):
+        self.socket.bind(peer)
 
     @staticmethod
     def server_socket(host, port):
         socket = RDTPStream(host,port)
-        socket.bind()
+        socket.bind(("",port))
+        return socket
+
+    @staticmethod
+    def server_client_socket(host, port):
+        socket = RDTPStream(host,port)
+        socket.bind(("",0))
         return socket
 
     @staticmethod
@@ -31,7 +37,7 @@ class RDTPStream():
         return message
 
     def send(self,message):
-        self.socket.sendto(message, self.socket.getpeername())
+        self.socket.sendto(message, (self.host,self.port))
 
     def send(self,message, peer):
         self.socket.sendto(message, peer)
