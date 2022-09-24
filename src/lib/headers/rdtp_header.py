@@ -15,7 +15,10 @@ class RDTPHeader:
         return struct.pack(RDTP_FORMAT_STRING, self.seq_num, self.ack_num, self.window, self.ack_only, self.fin )
 
 
-def from_binary_string(bytestring):
-    data = struct.unpack(RDTP_FORMAT_STRING, bytestring)
+def from_bytes(bytes):
+    data = struct.unpack(RDTP_FORMAT_STRING, bytes)
     header = RDTPHeader(data[0], data[1], data[2], data[3], data[4])
     return header
+
+def size():
+    return struct.calcsize(RDTP_FORMAT_STRING)
