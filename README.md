@@ -5,8 +5,8 @@
 ## download_file.py
 
 ```
-python download_file.py -h
-usage: download_file.py [-h] [-v | -q] [-H ADDR] [-p PORT] [-d FILEPATH] [-n FILENAME]
+python3 src/download_file.py -h
+usage: download_file.py [-h] [-v | -q] [-saw | -gbn GO_BACK_N] [-H ADDR] [-p PORT] [-d FILEPATH] [-n FILENAME]
 
 description: Downloads a specific file from the server
 
@@ -14,6 +14,10 @@ optional arguments:
   -h, --help            show this help message and exit
   -v, --verbose         increase output verbosity
   -q, --quiet           decrease output verbosity
+  -saw, --stop_and_wait
+                        choose stop and wait transfer
+  -gbn GO_BACK_N, --go_back_n GO_BACK_N
+                        choose go back N transfer
   -H ADDR, --host ADDR  server IP address
   -p PORT, --port PORT  server port
   -d FILEPATH, --dst FILEPATH
