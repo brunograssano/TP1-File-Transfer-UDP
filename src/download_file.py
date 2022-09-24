@@ -4,6 +4,8 @@ import argparse
 import lib.constants as constants
 import lib.utils as utils
 
+from lib.client.stop_and_wait import StopAndWaitClient
+from lib.client.go_back_n import GoBackNClient
 
 def set_download_parser():
     parser = argparse.ArgumentParser(description="description: Downloads a\
@@ -31,6 +33,12 @@ def set_download_parser():
     return parser
 
 
+def get_client(stop_and_wait_mode, verbosity_level=1):
+    if stop_and_wait_mode:
+        return StopAndWaitClient(verbosity_level)
+    else:
+        return GoBackNClient(verbosity_level)
+
 def main() -> None:
     try:
         # Seteo archivo de logs
@@ -46,13 +54,18 @@ def main() -> None:
         print(args)
         verbosity_level = utils.calculate_verbosity(args)
         print(verbosity_level)
+        stop_and_wait_mode = args.stop_and_wait
         # todo chequear que tengo espacio para guardar
         # el archivo que quiero descargar
 
         # todo validar protocolo
         # todo obtener cliente
+        client = get_client(stop_and_wait_mode, verbosity_level)
         # todo descargar archivo
-        sys.exit(0)
+        result = client.download_file(
+            args.dst, args.name, args.host, args.port)
+
+        sys.exit(result)
     # !manejo errores
     except Exception:
         utils.print_unknown_exception_catch(constants.LOGGING_FILE)

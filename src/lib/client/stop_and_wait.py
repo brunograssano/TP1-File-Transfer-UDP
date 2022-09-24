@@ -5,10 +5,13 @@ import time
 import utils as utils
 import constants as constants
 
+import lib.initial_message as init_msn
+
 WAITING_TIME = 60
 
 class StopAndWaitClient:
     def __init__(self, verbose=1):
+        #! Deberia cambiarlo al protocolo que hacemos!!
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.last_packet_time = time.time()
         self.verbosity = verbose
@@ -51,7 +54,25 @@ class StopAndWaitClient:
 
     #todo ver que necesita el handshake
     def handshake(self, file_name, file_size, name, port):
-        #todo mandar y recibir SYN
+        #todo mandar file size y recibir ACK
+        initial_message = init_msn.InitialMessage(upload=0, file_size=0, filename=file_name)
+        initial_message.as_bytes()
+        cont = 0
+        while cont > 10:
+            self.socket.sendto(initial_message, (name, port))
+            try:
+                self.socket.settimeout(1)
+                #todo terminar
+                #packet_received, address = self.socket.recvfrom(
+                #    constants.BUF_SIZE)
+            except socket.timeout:
+                cont += 1
+                continue
+
+            #file_size = packing.unpack_file_size(packet_received)
+            #if file_size == 0:
+            #    return file_size, None
+            break
         ...
 
     def __del__(self):
