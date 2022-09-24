@@ -11,9 +11,9 @@ class RDTPListener():
         self.welcoming_socket.bind((host, port))
 
     def listen(self):
-        message, clientAddress = self.welcoming_socket.recvfrom(2048)
+        message, client_address = self.welcoming_socket.recvfrom(2048)
         logging.info("Received a new client request")
-        client_socket = RDTPStream.server_socket('', 0)
+        client_socket = RDTPStream.server_client_socket(client_address[0],client_address[1])
         return InitialMessage.from_bytes(message), client_socket
 
     def close(self):
