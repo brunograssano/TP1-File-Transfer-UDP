@@ -9,7 +9,7 @@ class FileManager:
         """Creates a file manager
         Params:
         * file_name: The name of the file to open
-        * mode: 'r','w'
+        * mode: 'rb','wb'
         * read_size: The read size size in bytes
 
         Logs in error mode and raises FileNotFoundError if the file could not be opened
@@ -22,7 +22,7 @@ class FileManager:
             logging.debug("Opened file with name: " + file_name)
         except Exception:
             logging.error("Error opening file with name: " + file_name)
-            raise FileNotFoundError("Error opening file")
+            raise FileManagerError("Error opening file")
 
     def close(self):
         """Closes the file, must be called to free resources and to make sure the last bytes were written to the disk"""

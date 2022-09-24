@@ -5,16 +5,16 @@ class RDTPStream():
         self.socket = socket(AF_INET, SOCK_DGRAM)
         self.socket.bind((host, port))
 
-    def gethost():
+    def gethost(self):
         return self.socket.getsockname()[0]
 
-    def getport():
+    def getport(self):
         return self.socket.getsockname()[1]
 
-    def read(buffersize):
-        message, clientAddress = client_socket.recvfrom(buffersize)
+    def read(self,buffersize):
+        message, clientAddress = self.socket.recvfrom(buffersize)
         self.client = clientAddress
         return message
 
-    def send(message):
+    def send(self,message):
         self.socket.sendto(message.encode(), self.socket.getpeername())
