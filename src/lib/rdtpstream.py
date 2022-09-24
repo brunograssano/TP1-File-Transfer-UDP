@@ -30,7 +30,7 @@ class RDTPStream():
         self.client = clientAddress
         return message
 
-    def send(self,message):
+    def send2(self,message):
         self.socket.sendto(message, self.socket.getpeername())
 
     def send(self,message, peer):

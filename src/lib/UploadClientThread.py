@@ -1,7 +1,7 @@
 import threading
 
 from lib.InitialMessage import InitialMessage
-from lib.RdtpStream import RDTPStream
+from lib.rdtpstream import RDTPStream
 
 class UploadClientThread(threading.Thread):
 
@@ -11,5 +11,5 @@ class UploadClientThread(threading.Thread):
         self.file_size = initial_message.get_file_size()
 
     def run(self):
-        self.client_socket.send("holas".encode())
+        self.client_socket.send2("holas".encode())
         print("hola")

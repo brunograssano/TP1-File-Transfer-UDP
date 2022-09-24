@@ -1,6 +1,6 @@
 import threading
 from lib.InitialMessage import *
-from lib.RdtpStream import *
+from lib.rdtpstream import *
 
 class DownloadClientThread(threading.Thread):
 

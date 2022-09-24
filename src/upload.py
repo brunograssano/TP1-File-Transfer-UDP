@@ -2,7 +2,7 @@ import argparse
 from socket import *
 import lib.constants as constants
 from lib.InitialMessage import InitialMessage
-from lib.RdtpStream import RDTPStream
+from lib.rdtpstream import RDTPStream
 
 def get_args():
     parser = argparse.ArgumentParser(description='< command description >')

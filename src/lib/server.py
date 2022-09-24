@@ -2,7 +2,7 @@ import lib.constants as constants
 from socket import *
 import logging
 from lib.DownloadClientThread import DownloadClientThread
-from lib.RdtpListener import RDTPListener
+from lib.rdtplistener import RDTPListener
 
 
 from lib.UploadClientThread import UploadClientThread

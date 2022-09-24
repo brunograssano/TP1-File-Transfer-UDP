@@ -1,6 +1,6 @@
 from socket import *
 from lib.InitialMessage import InitialMessage
-from lib.RdtpStream import RDTPStream
+from lib.rdtpstream import RDTPStream
 import logging
 
 class RDTPListener():
