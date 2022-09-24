@@ -1,6 +1,5 @@
-import lib.constants as constants
-from socket import *
 import logging
+from socket import *
 from lib.DownloadClientThread import DownloadClientThread
 from lib.rdtplistener import RDTPListener
 
