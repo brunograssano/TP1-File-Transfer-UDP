@@ -1,16 +1,20 @@
 from socket import *
-from rdtpstream import RDTPStream
-
+from lib.InitialMessage import InitialMessage
+from lib.RdtpStream import RDTPStream
+import logging
 
 class RDTPListener():
     def __init__(self, host, port):
+        self.host = host
+        self.port = port
         self.welcoming_socket = socket(AF_INET, SOCK_DGRAM)
         self.welcoming_socket.bind((host, port))
 
     def listen(self):
         message, clientAddress = self.welcoming_socket.recvfrom(2048)
-        client_socket = RDTPStream('', 0)
-        host = client_socket.gethost()
-        port = client_socket.getport()
-        self.welcoming_socket.sendto((str(host) + ":" + str(port)).encode, clientAddress)
-        return client_socket
+        logging.info("Received a new client request")
+        client_socket = RDTPStream.server_socket('', 0)
+        return InitialMessage.from_bytes(message), client_socket
+
+    def close(self):
+        self.welcoming_socket.close()

@@ -1,8 +1,19 @@
 import argparse
-import threading
-import random
+import logging
 import lib.constants as constants
-from socket import *
+
+import signal
+
+from lib.server import Server
+
+
+class SignalException(Exception):
+    pass
+
+
+def signal_handler(sig, frame):
+    raise SignalException()
+
 
 def get_args():
     parser = argparse.ArgumentParser(description='Start the fileserver and listen for clients.')
@@ -14,34 +25,22 @@ def get_args():
     parser.add_argument('-s', '--storage', action='store',nargs=1,help='specify the storage path')
     return parser.parse_args()
 
-
-
-def read_client(client_address):
-    client_socket = socket(AF_INET, SOCK_DGRAM)
-    client_socket.bind(('', 0))
-    port = "[SERVER]: " + str(client_socket.getsockname()[1])
-    client_socket.sendto(port.encode(), client_address)
-    while True:
-        message, clientAddress = client_socket.recvfrom(2048)
-        print("(message, client): {}, {}".format(message, clientAddress))
-        modifiedMessage = "[SERVER]: " +message.upper()
-        client_socket.sendto(modifiedMessage.encode(), clientAddress)
-
-def start_server(server_name: str, server_port: int):
-    clients = []
-    welcoming_socket = socket(AF_INET, SOCK_DGRAM)
-    welcoming_socket.bind((server_name, server_port))
-    print("The server is ready to receive")
-    while True:
-        message, clientAddress = welcoming_socket.recvfrom(2048)
-        welcoming_socket.sendto(("[SERVER]: " + "antes de cambiar de socket").encode(), clientAddress)
-        if message == b'close':
-            break;
-        clients.append(threading.Thread(target=read_client(clientAddress)).start())
-
-    for client in clients:
-        client.join()
-
 if __name__ == '__main__':
+
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+
     args = get_args()
-    start_server(args.host[0],args.port[0])
+    server = None
+    try:
+        logging.info("Starting server")
+        print("Corriendo")
+        server = Server(args.host[0],args.port[0])
+        server.start_server()
+    except SignalException:
+        logging.info("Closing server")
+    finally:
+        if server is not None:
+            server.close()
+        logging.info("Closed server")
+
