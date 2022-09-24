@@ -51,6 +51,7 @@ class StopAndWaitClient:
 
     #todo ver que necesita el handshake
     def handshake(self, file_name, file_size, name, port):
+        #todo mandar y recibir SYN
         ...
 
     def __del__(self):
