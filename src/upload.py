@@ -10,7 +10,7 @@ from lib.segments.RDTPSegment import RDTPSegment
 from lib.utils import print_file_not_found_error as utils
 import lib.constants as constants
 
-def upload(server_name: str, server_port: int, src:str, file_name: str):
+def upload(server_name: str, server_port: int, src:str, file_name: str, is_saw : bool):
 
     file_path = os.path.join(src,file_name)
     if not os.path.isfile(file_path):
@@ -19,6 +19,7 @@ def upload(server_name: str, server_port: int, src:str, file_name: str):
 
     file_size = os.path.getsize(file_path)
 
+    # TODO Crear el protocolo en base a is_saw (stop and wait) que va a tener al socket
     client_socket = RDTPStream.client_socket(server_name,server_port)
 
     can_send = client_socket.can_send_file(file_size, file_name)
@@ -40,4 +41,4 @@ def upload(server_name: str, server_port: int, src:str, file_name: str):
 
 if __name__ == '__main__':
     args = upload_parser()
-    upload(args.host[0],args.port[0],args.src[0],args.name[0])
+    upload(args.host[0],args.port[0],args.src[0],args.name[0],args.stop_and_wait)

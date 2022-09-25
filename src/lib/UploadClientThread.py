@@ -16,6 +16,7 @@ class UploadClientThread(threading.Thread):
         self.file_size = initial_message.get_file_size()
         self.filename = initial_message.get_filename()
         self.storage = storage
+        # TODO crear el protocolo en base a initial_message.is_stop_and_wait()
 
     def run(self):
         if not os.path.isdir(self.storage):
