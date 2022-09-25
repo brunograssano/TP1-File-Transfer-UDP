@@ -1,7 +1,7 @@
 import sys
 import logging
 import lib.constants as constants
-import lib.utils as utils
+from lib.utils import *
 from lib.parser import download_parser
 from lib.client.stop_and_wait import StopAndWaitClient
 from lib.client.go_back_n import GoBackNClient
@@ -22,10 +22,10 @@ def main() -> None:
             datefmt='%H:%M:%S'
         )
 
-        parser = download_parser()
-        args = parser.parse_args()
+        args = download_parser()
+        #args = parser.parse_args()
         print(args)
-        verbosity_level = utils.calculate_verbosity(args)
+        verbosity_level = calculate_verbosity(args)
         print(verbosity_level)
         stop_and_wait_mode = args.stop_and_wait
         # todo chequear que tengo espacio para guardar
@@ -41,7 +41,7 @@ def main() -> None:
         sys.exit(result)
     # !manejo errores
     except Exception:
-        utils.print_unknown_exception_catch(constants.LOGGING_FILE)
+        print_unknown_exception_catch(constants.LOGGING_FILE)
         sys.exit(1)
 
 

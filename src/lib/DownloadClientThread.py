@@ -2,6 +2,7 @@ import threading
 from lib.InitialMessage import *
 from lib.rdtpstream import *
 
+# Thread del lado del server que va a manejar la descarga
 class DownloadClientThread(threading.Thread):
 
     def __init__(self, initial_message : InitialMessage, client_socket : RDTPStream):
