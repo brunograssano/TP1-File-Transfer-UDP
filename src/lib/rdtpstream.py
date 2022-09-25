@@ -2,19 +2,45 @@ from socket import *
 
 class RDTPStream():
     def __init__(self, host, port):
+        self.host = host
+        self.port = port
         self.socket = socket(AF_INET, SOCK_DGRAM)
-        self.socket.bind((host, port))
 
-    def gethost():
+    def bind(self, peer):
+        self.socket.bind(peer)
+
+    @staticmethod
+    def server_socket(host, port):
+        socket = RDTPStream(host,port)
+        socket.bind(("",port))
+        return socket
+
+    @staticmethod
+    def server_client_socket(host, port):
+        socket = RDTPStream(host,port)
+        socket.bind(("",0))
+        return socket
+
+    @staticmethod
+    def client_socket(host, port):
+        return RDTPStream(host,port)
+
+    def gethost(self):
         return self.socket.getsockname()[0]
 
-    def getport():
+    def getport(self):
         return self.socket.getsockname()[1]
 
-    def read(buffersize):
-        message, clientAddress = client_socket.recvfrom(buffersize)
+    def read(self,buffersize):
+        message, clientAddress = self.socket.recvfrom(buffersize)
         self.client = clientAddress
         return message
 
-    def send(message):
-        self.socket.sendto(message.encode(), self.socket.getpeername())
+    def send2(self,message):
+        self.socket.sendto(message, (self.host,self.port))
+
+    def send(self,message, peer):
+        self.socket.sendto(message, peer)
+
+    def close(self):
+        self.socket.close()
