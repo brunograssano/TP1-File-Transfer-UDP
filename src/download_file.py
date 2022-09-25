@@ -22,8 +22,8 @@ def main() -> None:
             datefmt='%H:%M:%S'
         )
 
-        parser = download_parser()
-        args = parser.parse_args()
+        args = download_parser()
+        #args = parser.parse_args()
         print(args)
         verbosity_level = calculate_verbosity(args)
         print(verbosity_level)

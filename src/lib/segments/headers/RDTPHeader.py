@@ -6,9 +6,9 @@ RDTP_FORMAT_STRING = "!IIH??"
 class RDTPHeader:
     def __init__(self, seq_num, ack_num, window, ack_only, fin):
         self.seq_num: ctypes.c_uint32 = seq_num
-        self.ack_num: ctypes.c_uint32 = ack_num       
-        self.window: ctypes.c_uint16 = window       
-        self.ack_only: bool = ack_only    
+        self.ack_num: ctypes.c_uint32 = ack_num
+        self.window: ctypes.c_uint16 = window
+        self.ack_only: bool = ack_only
         self.fin:bool = fin
 
     def as_bytes(self):
