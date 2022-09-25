@@ -11,6 +11,18 @@ class RDTPHeader:
         self.ack_only: bool = ack_only    
         self.fin:bool = fin
 
+    def is_fin(self):
+        return self.fin
+    
+    def is_ack(self):
+        return self.ack_only
+
+    def get_ack(self):
+        return self.ack_num
+
+    def get_seq(self):
+        return self.seq_num
+
     def as_bytes(self):
         return struct.pack(RDTP_FORMAT_STRING, self.seq_num, self.ack_num, self.window, self.ack_only, self.fin )
 

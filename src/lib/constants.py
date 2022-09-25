@@ -11,3 +11,5 @@ COLOR_END = '\033[0m'
 
 # LOG FILE
 LOGGING_FILE = "logfile_download.txt"
+
+MSG_SIZE = 1024

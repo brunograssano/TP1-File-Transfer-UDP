@@ -11,6 +11,10 @@ class InitialMessage():
         self.file_size : ctypes.c_uint32 = file_size
         self.filename = filename
 
+    @staticmethod
+    def upload_message(file_size : int, filename : str):
+        return InitialMessage(True, file_size, filename)
+
     def as_bytes(self):
         """Encodes the initial message in Big Endian"""
         return struct.pack(INITIAL_MESSAGE_FORMAT_STRING, self.upload, self.file_size, self.filename.encode())

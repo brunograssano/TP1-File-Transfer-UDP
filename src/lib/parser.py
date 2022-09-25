@@ -29,6 +29,7 @@ def server_parser():
 
 def upload_parser():
     parser = common_parser("description: Uploads a file to the server")
+    parser.add_argument('-s','--src',nargs=1, dest='src', metavar="FILEPATH",action='store',help='source file path')
     parser.add_argument('-n','--name',nargs=1, dest='name', metavar="FILENAME",action='store',help='file name')
     return parser.parse_args()
 
