@@ -10,7 +10,7 @@ class RDTPStream():
         self.socket.bind(peer)
 
     @staticmethod
-    def server_socket(host, port):
+    def server_welcoming_socket(host, port):
         socket = RDTPStream(host,port)
         socket.bind(("",port))
         return socket
@@ -33,14 +33,10 @@ class RDTPStream():
 
     def read(self,buffersize):
         message, clientAddress = self.socket.recvfrom(buffersize)
-        self.client = clientAddress
-        return message
+        return message, clientAddress
 
-    def send2(self,message):
-        self.socket.sendto(message, (self.host,self.port))
-
-    def send(self,message, peer):
-        self.socket.sendto(message, peer)
+    def send(self, message, ip, port):
+        self.socket.sendto(message, (ip, port))
 
     def close(self):
         self.socket.close()
