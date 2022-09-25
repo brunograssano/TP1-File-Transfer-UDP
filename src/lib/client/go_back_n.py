@@ -2,8 +2,8 @@ import socket
 import os
 import time
 
-import utils as utils
-import constants as constants
+import lib.utils as utils
+import lib.constants as constants
 
 class GoBackNClient:
     def __init__(self, verbose=1):

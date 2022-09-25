@@ -2,10 +2,12 @@ import socket
 import os
 import time
 
-import utils as utils
-import constants as constants
+import lib.utils as utils
+import lib.constants as constants
 
-import lib.initial_message as init_msn
+import lib.InitialMessage as init_msn
+import lib.segments.RDTPSegment as protocol
+import lib.segments.headers.RDTPHeader as header
 
 WAITING_TIME = 60
 
@@ -56,7 +58,9 @@ class StopAndWaitClient:
     def handshake(self, file_name, file_size, name, port):
         #todo mandar file size y recibir ACK
         initial_message = init_msn.InitialMessage(upload=0, file_size=0, filename=file_name)
-        initial_message.as_bytes()
+        head = header(seq_num=0, ack_num=1, window=0, ack_only=False, fin=False)
+        first_msn = protocol(data=initial_message, header=head)
+        encoded_first_msn = first_msn.as_bytes()
         cont = 0
         while cont > 10:
             self.socket.sendto(initial_message, (name, port))
