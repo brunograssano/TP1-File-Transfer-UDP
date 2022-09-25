@@ -31,7 +31,7 @@ def upload(server_name: str, server_port: int, src:str, file_name: str):
     while file_size > 0:
         read_size = min(file_size, constants.MSG_SIZE)
         data = file.read(read_size)
-        client_socket.send(data)
+        client_socket.send(data, server_name, server_port)
         file_size = file_size - read_size
 
     file.close()
