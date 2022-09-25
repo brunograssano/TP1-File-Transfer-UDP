@@ -8,10 +8,11 @@ import lib.constants as constants
 import lib.InitialMessage as init_msn
 import lib.segments.RDTPSegment as protocol
 import lib.segments.headers.RDTPHeader as rdtp_header
+from src.lib.protocols.base_protocol import BaseProtocol
 
 WAITING_TIME = 60
 
-class StopAndWaitClient:
+class StopAndWait(BaseProtocol):
     def __init__(self, verbose=1):
         #! Deberia cambiarlo al protocolo que hacemos!!
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

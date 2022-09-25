@@ -25,6 +25,13 @@ class RDTPStream():
     def client_socket(host, port):
         return RDTPStream(host,port)
 
+    def settimeout(self, seconds):
+        self.socket.settimeout(seconds)
+
+    def setaddress(self, address):
+        self.host = address[0]
+        self.port = address[1]
+
     def gethost(self):
         return self.socket.getsockname()[0]
 
