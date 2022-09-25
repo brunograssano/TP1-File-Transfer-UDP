@@ -21,8 +21,9 @@ def upload(server_name: str, server_port: int, src:str, file_name: str):
 
     client_socket = RDTPStream.client_socket(server_name,server_port)
 
-    is_fin = client_socket.can_send_file(file_size, file_name)
-    if is_fin:
+    can_send = client_socket.can_send_file(file_size, file_name)
+    if not can_send:
+        client_socket.close()
         logging.error("Server does not have enough free disk")
         return
 

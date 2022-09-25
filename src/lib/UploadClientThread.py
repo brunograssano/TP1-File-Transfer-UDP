@@ -16,11 +16,10 @@ class UploadClientThread(threading.Thread):
 
     def run(self):
         total, used, free = shutil.disk_usage(".")
+        self.client_socket.can_save_file(self.file_size < free)
         if free < self.file_size:
             self.client_socket.close()
             return
-        
-        self.client_socket.accept()
 
         file = FileManager(self.filename,"wb",0)
         read = 0
