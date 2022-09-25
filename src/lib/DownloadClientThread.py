@@ -10,6 +10,7 @@ class DownloadClientThread(threading.Thread):
         self.client_socket = client_socket
         self.filename = initial_message.get_filename()
         self.storage = storage
+        # TODO crear el protocolo en base a initial_message.is_stop_and_wait()
 
     def run(self):
         print("hola")
