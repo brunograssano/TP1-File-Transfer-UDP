@@ -8,20 +8,19 @@ from lib.UploadClientThread import UploadClientThread
 
 class Server:
 
-    def __init__(self,server_name: str, server_port: int):
+    def __init__(self,server_name: str, server_port: int, storage : str):
         self.clients = []
+        self.storage = storage
         self.server_socket = RDTPListener(server_name,server_port)
 
     def start_server(self):
         logging.info("Ready to receive connections")
         while True:
-            print("Antes del listen")
             initial_message, client_socket = self.server_socket.listen()
-            print("Recibido")
             if initial_message.is_upload():
-                thread = UploadClientThread(initial_message, client_socket)
+                thread = UploadClientThread(initial_message, client_socket, self.storage)
             else:
-                thread = DownloadClientThread(initial_message, client_socket)
+                thread = DownloadClientThread(initial_message, client_socket, self.storage)
 
             print("Se creo thread")
             self.clients.append(thread)

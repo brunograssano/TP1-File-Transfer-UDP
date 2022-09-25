@@ -24,7 +24,7 @@ def common_parser(description : str):
 
 def server_parser():
     parser = common_parser("description: Starts the server")
-    parser.add_argument('-s', '--storage', action='store',nargs=1,help='specify the storage path')
+    parser.add_argument('-s', '--storage', action='store',nargs=1, default=[constants.DEFAULT_STORAGE], help='specify the storage path')
     return parser.parse_args()
 
 def upload_parser():
