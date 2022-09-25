@@ -23,7 +23,7 @@ if __name__ == '__main__':
     try:
         logging.info("Starting server")
         print("Corriendo")
-        server = Server(args.host[0],args.port[0])
+        server = Server(args.host[0],args.port[0],args.storage[0])
         server.start_server()
     except SignalException:
         logging.info("Closing server")

@@ -1,3 +1,5 @@
+import logging
+import os
 import shutil
 import threading
 
@@ -8,14 +10,19 @@ from lib.rdtpstream import RDTPStream
 import constants
 class UploadClientThread(threading.Thread):
 
-    def __init__(self, initial_message : InitialMessage, client_socket : RDTPStream):
+    def __init__(self, initial_message : InitialMessage, client_socket : RDTPStream, storage : str):
         threading.Thread.__init__(self)
         self.client_socket = client_socket
         self.file_size = initial_message.get_file_size()
         self.filename = initial_message.get_filename()
+        self.storage = storage
 
     def run(self):
-        total, used, free = shutil.disk_usage(".")
+        if not os.path.isdir(self.storage):
+            logging.info("Creating storage folder")
+            os.makedirs(self.storage, exist_ok=True)
+
+        total, used, free = shutil.disk_usage(self.storage)
         self.client_socket.can_save_file(self.file_size < free)
         if free < self.file_size:
             self.client_socket.close()
