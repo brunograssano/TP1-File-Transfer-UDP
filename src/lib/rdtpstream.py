@@ -33,8 +33,7 @@ class RDTPStream():
 
     def read(self,buffersize):
         message, clientAddress = self.socket.recvfrom(buffersize)
-        self.client = clientAddress
-        return message
+        return message, clientAddress
 
     def send(self, message, ip, port):
         self.socket.sendto(message, (ip, port))
