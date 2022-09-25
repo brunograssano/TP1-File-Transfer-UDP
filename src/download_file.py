@@ -3,14 +3,14 @@ import logging
 import lib.constants as constants
 from lib.utils import *
 from lib.parser import download_parser
-from lib.client.stop_and_wait import StopAndWaitClient
-from lib.client.go_back_n import GoBackNClient
+from lib.protocols.stop_and_wait import StopAndWait
+from lib.protocols.go_back_n import GoBackN
 
 def get_client(stop_and_wait_mode, verbosity_level=1):
     if stop_and_wait_mode:
-        return StopAndWaitClient(verbosity_level)
+        return StopAndWait(verbosity_level)
     else:
-        return GoBackNClient(verbosity_level)
+        return GoBackN(verbosity_level)
 
 def main() -> None:
     try:

@@ -6,6 +6,8 @@ from src.lib.rdtpstream import RDTPStream
 from src.lib.segments.RDTPSegment import RDTPSegment
 from src.lib.segments.headers.RDTPHeader import RDTPHeader
 
+class LostConnectionError(Exception):
+    pass
 
 class BaseProtocol:
     def __init__(self, socket, is_stop_and_wait):
