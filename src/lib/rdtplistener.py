@@ -3,6 +3,8 @@ from lib.InitialMessage import InitialMessage
 from lib.rdtpstream import RDTPStream
 import logging
 
+from lib.segments.RDTPSegment import RDTPSegment
+
 class RDTPListener():
     def __init__(self, host, port):
         self.host = host
@@ -11,9 +13,11 @@ class RDTPListener():
 
     def listen(self):
         message, client_address = self.welcoming_socket.read(2048)
+        segment = RDTPSegment.from_bytes(message)
+
         logging.info("Received a new client request")
         client_socket = RDTPStream.server_client_socket(client_address[0],client_address[1])
-        return InitialMessage.from_bytes(message), client_socket
+        return InitialMessage.from_bytes(segment.data), client_socket
 
     def close(self):
         self.welcoming_socket.close()

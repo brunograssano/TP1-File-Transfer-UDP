@@ -1,10 +1,10 @@
 from socket import timeout
-import src.lib.constants as const
+import lib.constants as const
 from socket import socket
-from src.lib.InitialMessage import InitialMessage
-from src.lib.rdtpstream import RDTPStream
-from src.lib.segments.RDTPSegment import RDTPSegment
-from src.lib.segments.headers.RDTPHeader import RDTPHeader
+from lib.InitialMessage import InitialMessage
+from lib.rdtpstream import RDTPStream
+from lib.segments.RDTPSegment import RDTPSegment
+from lib.segments.headers.RDTPHeader import RDTPHeader
 
 class LostConnectionError(Exception):
     pass
@@ -25,7 +25,7 @@ class BaseProtocol:
         self.socket.settimeout(const.CLIENT_HANDSHAKE_TIMEOUT)
         while attempts < const.TIMEOUT_RETRY_ATTEMPTS:
             try:
-                self.socket.send(segment.as_bytes(), self.socket.gethost(), self.socket.getport())
+                self.socket.send(segment.as_bytes(), self.socket.host, self.socket.port)
                 answer, address = self.socket.read(const.MSG_SIZE)
                 self.socket.setaddress(address)
 
@@ -60,6 +60,11 @@ class BaseProtocol:
         segment = RDTPSegment(bytearray([]), header)
         self.socket.send(segment.as_bytes(), self.socket.gethost(), self.socket.getport())
 
+    def send(self, data):
+        raise NotImplementedError()
+    
+    def read(self, buffer_size):
+        raise NotImplementedError()
 
 
 

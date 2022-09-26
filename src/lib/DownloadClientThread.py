@@ -1,6 +1,8 @@
 import threading
 from lib.InitialMessage import *
 from lib.rdtpstream import *
+from lib.protocols.stop_and_wait import StopAndWait
+from lib.protocols.go_back_n import GoBackN
 
 # Thread del lado del server que va a manejar la descarga
 class DownloadClientThread(threading.Thread):
@@ -10,6 +12,10 @@ class DownloadClientThread(threading.Thread):
         self.client_socket = client_socket
         self.filename = initial_message.get_filename()
         self.storage = storage
+        if initial_message.is_stop_and_wait():
+            self.protocol = StopAndWait(client_socket, 1)
+        else:
+            self.protocol = GoBackN(1)
         # TODO crear el protocolo en base a initial_message.is_stop_and_wait()
 
     def run(self):
