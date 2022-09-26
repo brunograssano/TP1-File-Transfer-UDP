@@ -10,12 +10,12 @@ import lib.constants as constants
 import lib.InitialMessage as init_msn
 import lib.segments.RDTPSegment as protocol
 import lib.segments.headers.RDTPHeader as rdtp_header
-from src.lib.protocols.base_protocol import BaseProtocol, LostConnectionError
-import src.lib.constants as const
+from lib.protocols.base_protocol import BaseProtocol, LostConnectionError
+import lib.constants as const
 
 class StopAndWait(BaseProtocol):
     def __init__(self, socket, verbose=1):
-        super.__init__(socket=socket, is_stop_and_wait=True)
+        super().__init__(socket, True)
         self.verbosity = verbose
         self.socket.settimeout(const.CLIENT_STOP_AND_WAIT_TIMEOUT)
 
