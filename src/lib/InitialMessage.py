@@ -6,19 +6,19 @@ INITIAL_MESSAGE_FORMAT_STRING = "!??Is"
 
 class InitialMessage():
 
-    def __init__(self,upload, is_saw : bool, file_size : int, filename : str = ''):
+    def __init__(self,upload:bool, is_saw : bool, file_size : int, filename : str = ''):
         self.upload : ctypes.c_bool = upload
         self.is_saw : ctypes.c_bool = is_saw
         self.file_size : ctypes.c_uint32 = file_size
-        self.filename = filename
+        self.filename: str = filename
 
     @staticmethod
     def upload_message(file_size : int, filename : str, is_saw : bool):
-        return InitialMessage(True, file_size, filename, is_saw)
+        return InitialMessage(True, is_saw, file_size, filename)
 
     @staticmethod
     def download_message(filename : str, is_saw : bool):
-        return InitialMessage(False, 0, filename, is_saw)
+        return InitialMessage(False, is_saw, 0, filename)
 
     def as_bytes(self):
         """Encodes the initial message in Big Endian"""
@@ -39,5 +39,7 @@ class InitialMessage():
     @staticmethod
     def from_bytes(bytes):
         """Decodes the bytes into an initial message in Big Endian"""
+        print(struct.calcsize(INITIAL_MESSAGE_FORMAT_STRING))
+        print(bytes)
         data = struct.unpack(INITIAL_MESSAGE_FORMAT_STRING, bytes)
         return InitialMessage(data[0], data[1], data[2], data[3])
