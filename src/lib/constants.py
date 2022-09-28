@@ -5,15 +5,10 @@ DEFAULT_HOST = "localhost"
 # DEFAULT SERVER 
 DEFAULT_STORAGE = './storage'
 
-# COLOUR CONSTANTS
-COLOR_GREEN = '\033[92m'
-COLOR_BLUE = '\033[94m'
-COLOR_RED = '\033[91m'
-COLOR_BOLD = '\033[1m'
-COLOR_END = '\033[0m'
-
 # LOG FILE
-LOGGING_FILE = "logfile_download.txt"
+DOWNLOAD_LOG_FILENAME = "download.log"
+UPLOAD_LOG_FILENAME = "upload.log"
+SERVER_LOG_FILENAME = "server.log"
 
 MSG_SIZE = 1024
 

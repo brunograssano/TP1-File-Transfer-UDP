@@ -17,15 +17,15 @@ class Server:
         logging.info("Ready to receive connections")
         while True:
             initial_message, client_socket = self.server_socket.listen()
+            logging.info("Received connection")
             if initial_message.is_upload():
                 thread = UploadClientThread(initial_message, client_socket, self.storage)
             else:
                 thread = DownloadClientThread(initial_message, client_socket, self.storage)
 
-            print("Se creo thread")
             self.clients.append(thread)
             thread.start()
-            print("Empezo")
+            logging.debug("Started thread for a new client")
 
     def close(self):
         self.server_socket.close()
