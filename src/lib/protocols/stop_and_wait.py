@@ -4,7 +4,6 @@ import time
 
 from socket import timeout
 
-import lib.utils as utils
 import lib.constants as constants
 
 import lib.InitialMessage as init_msn
@@ -14,9 +13,8 @@ from lib.protocols.base_protocol import BaseProtocol, LostConnectionError
 import lib.constants as const
 
 class StopAndWait(BaseProtocol):
-    def __init__(self, socket, verbose=1):
+    def __init__(self, socket):
         super().__init__(socket, True)
-        self.verbosity = verbose
         self.socket.settimeout(const.CLIENT_STOP_AND_WAIT_TIMEOUT)
 
     def send(self, data):

@@ -1,3 +1,4 @@
+import logging
 from socket import timeout
 import lib.constants as const
 from socket import socket
@@ -56,6 +57,7 @@ class BaseProtocol:
                 continue
 
     def close(self):
+        logging.debug("Ending connection")
         header = RDTPHeader(self.seq_num, self.ack_num, 10, True, True)
         segment = RDTPSegment(bytearray([]), header)
         self.socket.send(segment.as_bytes(), self.socket.gethost(), self.socket.getport())

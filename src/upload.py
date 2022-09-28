@@ -2,27 +2,25 @@ from asyncio import constants
 import logging
 import os
 from socket import *
-from lib.InitialMessage import InitialMessage
+
 from lib.file_manager import FileManager
 from lib.rdtpstream import RDTPStream
 from lib.parser import upload_parser
-from lib.segments.RDTPSegment import RDTPSegment
-from lib.utils import print_file_not_found_error as utils
-import lib.constants as constants
 from lib.protocols.go_back_n import GoBackN
 from lib.protocols.stop_and_wait import StopAndWait
+from lib.log import set_up_logger
+import lib.constants as constants
 
 def upload(server_name: str, server_port: int, src:str, file_name: str, is_saw : bool):
 
     file_path = os.path.join(src,file_name)
     if not os.path.isfile(file_path):
-        utils.print_file_not_found_error(file_path)
+        logging.error(f"File in {file_path} does not exists")
         return
 
     file_size = os.path.getsize(file_path)
+    logging.debug(f"Found file in {file_path} with size {file_size} bytes")
 
-
-    # TODO Crear el protocolo en base a is_saw (stop and wait) que va a tener al socket
     client_socket = RDTPStream.client_socket(server_name,server_port)
     
     if is_saw:
@@ -49,4 +47,7 @@ def upload(server_name: str, server_port: int, src:str, file_name: str, is_saw :
 
 if __name__ == '__main__':
     args = upload_parser()
+    set_up_logger(args, constants.UPLOAD_LOG_FILENAME)
+    logging.info("Starting client")
     upload(args.host[0],args.port[0],args.src[0],args.name[0],args.stop_and_wait)
+    logging.info("End of execution")

@@ -29,7 +29,6 @@ class UploadClientThread(threading.Thread):
 
         total, used, free = shutil.disk_usage(self.storage)
         segment = self.protocol.listen_to_handshake(self.file_size < free)
-        print(segment.header.fin)
         
         if free < self.file_size:
             self.protocol.close()
