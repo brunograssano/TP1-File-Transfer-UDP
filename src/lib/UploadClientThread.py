@@ -18,9 +18,9 @@ class UploadClientThread(threading.Thread):
         self.filename = initial_message.get_filename()
         self.storage = storage
         if initial_message.is_stop_and_wait():
-            self.protocol = StopAndWait(client_socket, 1)
+            self.protocol = StopAndWait(client_socket)
         else:
-            self.protocol = GoBackN(1)
+            self.protocol = GoBackN()
 
     def run(self):
         if not os.path.isdir(self.storage):
