@@ -31,7 +31,7 @@ def upload(server_name: str, server_port: int, src:str, file_name: str, is_saw :
 
     file = None
     try:
-        can_send = protocol.send_handshake(file_size, file_name)
+        can_send = protocol.send_handshake(file_size, file_name, True)
         if not can_send:
             protocol.close()
             logging.error("Server does not have enough free disk")

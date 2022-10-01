@@ -36,7 +36,7 @@ class UploadClientThread(threading.Thread):
 
         file = None
         try:
-            segment = self.protocol.listen_to_handshake(self.file_size < free)
+            segment = self.protocol.listen_to_handshake(self.file_size < free, self.file_size, self.filename, True)
             if free < self.file_size:
                 return
 

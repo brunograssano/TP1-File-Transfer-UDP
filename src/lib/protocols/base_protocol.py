@@ -17,8 +17,12 @@ class BaseProtocol:
         self.seq_num = 0
         self.ack_num = 0
 
-    def send_handshake(self, file_size, file_name):
-        initial_msg = InitialMessage.upload_message(file_size, file_name, self.is_stop_and_wait)
+    def send_handshake(self, file_size, file_name, is_upload):
+        if(is_upload):
+            initial_msg = InitialMessage.upload_message(file_size, file_name, self.is_stop_and_wait)
+        else:
+            initial_msg = InitialMessage.download_message(file_name, self.is_stop_and_wait)
+
         header = RDTPHeader(0, 0, False) 
         segment = RDTPSegment(initial_msg.as_bytes(), header)
 
@@ -40,9 +44,16 @@ class BaseProtocol:
         raise LostConnectionError("Lost connection error")
 
 
-    def listen_to_handshake(self, is_space_available):
+    def listen_to_handshake(self, is_space_available, file_size, file_name, is_upload):
+
+        if(is_upload):
+            initial_msg = InitialMessage.upload_message(file_size, file_name, self.is_stop_and_wait)
+        else:
+            initial_msg = InitialMessage.download_message(file_name, self.is_stop_and_wait)
+            initial_msg.file_size = file_size
+
         header = RDTPHeader(0, 0, not is_space_available)
-        segment = RDTPSegment(bytearray([]), header)
+        segment = RDTPSegment(initial_msg.as_bytes(), header)
 
         attempts = 0
         self.socket.settimeout(const.SERVER_HANDSHAKE_TIMEOUT)
