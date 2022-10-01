@@ -26,13 +26,13 @@ class Server:
 
     def add_client(self, initial_message, client_socket):
         self.client_mutex.acquire()
-        if not self.clients[(client_socket.get_host(), client_socket.get_port())]:
+        if (client_socket.gethost(), client_socket.getport()) not in self.clients:
             if initial_message.is_upload():
                 thread = UploadClientThread(self, initial_message, client_socket, self.storage)
             else:
                 thread = DownloadClientThread(self, initial_message, client_socket, self.storage)
            
-            self.clients[(client_socket.get_host(), client_socket.get_port())] = True
+            self.clients[(client_socket.gethost(), client_socket.getport())] = True
             self.client_threads.append(thread)
             thread.start()
             logging.debug("Started thread for a new client")
