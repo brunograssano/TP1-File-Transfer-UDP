@@ -25,7 +25,7 @@ def upload(server_name: str, server_port: int, src:str, file_name: str, is_saw :
     client_socket = RDTPStream.client_socket(server_name,server_port)
     
     if is_saw:
-        protocol = StopAndWait(client_socket, 1)
+        protocol = StopAndWait(client_socket)
     else: 
         protocol = GoBackN(1)
 
