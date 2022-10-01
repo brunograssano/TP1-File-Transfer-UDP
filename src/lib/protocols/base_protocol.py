@@ -19,7 +19,7 @@ class BaseProtocol:
 
     def send_handshake(self, file_size, file_name):
         initial_msg = InitialMessage.upload_message(file_size, file_name, self.is_stop_and_wait)
-        header = RDTPHeader(0, 0, 10, False, False) 
+        header = RDTPHeader(0, 0, False) 
         segment = RDTPSegment(initial_msg.as_bytes(), header)
 
         attempts = 0
@@ -40,7 +40,7 @@ class BaseProtocol:
         return False
 
     def listen_to_handshake(self, is_space_available):
-        header = RDTPHeader(0, 0, 10, True, not is_space_available)
+        header = RDTPHeader(0, 0, not is_space_available)
         segment = RDTPSegment(bytearray([]), header)
 
         attempts = 0
@@ -58,7 +58,7 @@ class BaseProtocol:
 
     def close(self):
         logging.debug("Ending connection")
-        header = RDTPHeader(self.seq_num, self.ack_num, 10, True, True)
+        header = RDTPHeader(self.seq_num, self.ack_num, True)
         segment = RDTPSegment(bytearray([]), header)
         self.socket.send(segment.as_bytes(), self.socket.gethost(), self.socket.getport())
 
