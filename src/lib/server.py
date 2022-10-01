@@ -3,7 +3,7 @@ import logging
 from socket import *
 from lib.DownloadClientThread import DownloadClientThread
 from lib.rdtplistener import RDTPListener
-from threading import Thread, Lock
+from threading import Lock
 
 
 from lib.UploadClientThread import UploadClientThread
