@@ -23,7 +23,7 @@ Además, para poder lograr el objetivo planteado, se aprenderá el uso de la int
 
 ### Archivo de Configuración Default
 
-Al final del archivo src/lib/constants.py se encuentra una serie de constantes de configuración por default que puede ser modificada. Por ejemplo, esto incluye tiempos de timeout y numero de intentos por conexion.
+El archivo `src/lib/constants.py` contiene constantes de configuración por default que pueden ser modificadas. Por ejemplo, esto incluye tiempos de timeout y número de intentos por conexion.
 
 Por defecto las aplicaciones estan configuradas para utilizar `localhost` y el puerto `12000`.
 
