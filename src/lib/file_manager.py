@@ -38,7 +38,7 @@ class FileManager:
         """
         try:
             data = self.file.read(read_size)
-            logging.debug("Wrote to file with name: " + self.file_name)
+            logging.debug(f"Reading {read_size} bytes from file with name: {self.file_name}")
             return data
         except Exception:
             logging.error("Error reading from file with name: " + self.file_name)
@@ -52,7 +52,7 @@ class FileManager:
         """
         try:
             self.file.write(data)
-            logging.debug("Wrote to file with name: " + self.file_name)
+            logging.debug(f"Wrote {len(data)} bytes to file with name: {self.file_name}")
         except Exception:
             logging.error("Error writing to file with name: " + self.file_name)
             raise FileManagerError("Error writing to file")
