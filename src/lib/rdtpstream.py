@@ -48,5 +48,5 @@ class RDTPStream():
 
     def close(self):
         logging.debug("Closing socket")
-        self.socket.shutdown() 
+        self.socket.shutdown(SHUT_RDWR) 
         self.socket.close()
