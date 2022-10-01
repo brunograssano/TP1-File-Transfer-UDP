@@ -41,7 +41,7 @@ def upload(server_name: str, server_port: int, src:str, file_name: str, is_saw :
         while file_size > 0:
             read_size = min(file_size, constants.MSG_SIZE)
             data = file.read(read_size)
-            protocol.send(data, server_name, server_port)
+            protocol.send(data)
             file_size = file_size - read_size
 
     except LostConnectionError:
