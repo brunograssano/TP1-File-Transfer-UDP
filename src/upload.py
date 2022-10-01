@@ -11,6 +11,7 @@ from lib.protocols.stop_and_wait import StopAndWait
 from lib.log import set_up_logger
 from lib.protocols.base_protocol import LostConnectionError
 import lib.constants as constants
+from lib.file_manager import FileManagerError
 
 def upload(server_name: str, server_port: int, src:str, file_name: str, is_saw : bool):
 
@@ -44,6 +45,8 @@ def upload(server_name: str, server_port: int, src:str, file_name: str, is_saw :
             protocol.send(data)
             file_size = file_size - read_size
 
+    except FileManagerError:
+        logging.error("Error with file manager, finishing connection")
     except LostConnectionError:
         logging.error("Lost connection to server. ")
     finally:
