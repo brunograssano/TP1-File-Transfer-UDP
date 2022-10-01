@@ -19,7 +19,7 @@ class BaseProtocol:
 
     def send_handshake(self, file_size, file_name):
         initial_msg = InitialMessage.upload_message(file_size, file_name, self.is_stop_and_wait)
-        header = RDTPHeader(0, 0, 10, False, False) 
+        header = RDTPHeader(0, 0, False) 
         segment = RDTPSegment(initial_msg.as_bytes(), header)
 
         attempts = 0
@@ -35,12 +35,13 @@ class BaseProtocol:
 
             except timeout:
                 attempts += 1
-                continue
+                continue 
+        
+        raise LostConnectionError("Lost connection error")
 
-        return False
 
     def listen_to_handshake(self, is_space_available):
-        header = RDTPHeader(0, 0, 10, True, not is_space_available)
+        header = RDTPHeader(0, 0, not is_space_available)
         segment = RDTPSegment(bytearray([]), header)
 
         attempts = 0
@@ -56,16 +57,20 @@ class BaseProtocol:
                 attempts += 1
                 continue
 
+        raise LostConnectionError("Lost connection error")
+
     def close(self):
         logging.debug("Ending connection")
-        header = RDTPHeader(self.seq_num, self.ack_num, 10, True, True)
+        header = RDTPHeader(self.seq_num, self.ack_num, True)
         segment = RDTPSegment(bytearray([]), header)
         self.socket.send(segment.as_bytes(), self.socket.gethost(), self.socket.getport())
+
+        self.socket.close()
 
     def send(self, data):
         raise NotImplementedError()
     
-    def read(self, buffer_size):
+    def read(self, buffer_size :int):
         raise NotImplementedError()
 
 
