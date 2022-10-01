@@ -43,8 +43,8 @@ class RDTPStream():
         message, clientAddress = self.socket.recvfrom(buffersize)
         return message, clientAddress
 
-    def send(self, message, ip, port):
-        self.socket.sendto(message, (ip, port))
+    def send(self, message):
+        self.socket.sendto(message, (self.host, self.port))
 
     def close(self):
         logging.debug("Closing socket")

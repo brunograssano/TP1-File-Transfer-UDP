@@ -25,7 +25,6 @@ class Server:
             self.add_client(initial_message, client_address, client_socket)
 
     def add_client(self, initial_message, client_address, client_socket):
-        print("client: ", self.clients)
         self.client_mutex.acquire()
         if (client_address[0], client_address[1]) not in self.clients:
             if initial_message.is_upload():

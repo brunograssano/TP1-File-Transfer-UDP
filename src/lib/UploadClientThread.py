@@ -37,14 +37,12 @@ class UploadClientThread(threading.Thread):
         file = None
         try:
             segment = self.protocol.listen_to_handshake(self.file_size < free)
-            
             if free < self.file_size:
                 return
 
-            file = FileManager(self.filepath,"wb",0)
+            file = FileManager(self.filepath,"wb")
 
             write = 0
-            print("tamanio de archivo: ", self.file_size)
             while write < self.file_size:
                 data = self.protocol.read(constants.MSG_SIZE)
                 file.write(data)

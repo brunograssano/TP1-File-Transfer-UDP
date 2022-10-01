@@ -5,7 +5,7 @@ class FileManagerError(Exception):
 
 class FileManager:
 
-    def __init__(self, file_name: str, mode: str, read_size: int):
+    def __init__(self, file_name: str, mode: str):
         """Creates a file manager
         Params:
         * file_name: The name of the file to open
