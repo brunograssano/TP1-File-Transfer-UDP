@@ -21,9 +21,10 @@ def download(server_name: str, server_port: int, dst:str, file_name: str, is_saw
         protocol = StopAndWait(client_socket)
     else: 
         protocol = GoBackN()
+    
     file = None
     try:
-        can_download = protocol.send_handshake(0, file_name, False)
+        can_download, file_size = protocol.send_handshake(0, file_name, False)
         if not can_download:
             protocol.close()
             logging.error("File not found in server")

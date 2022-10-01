@@ -40,6 +40,7 @@ class UploadClientThread(threading.Thread):
             if free < self.file_size:
                 return
 
+            logging.debug(f"Receiving file {self.filename} of {self.file_size} from client")
             file = FileManager(self.filepath,"wb")
 
             write = 0
@@ -47,7 +48,6 @@ class UploadClientThread(threading.Thread):
                 data = self.protocol.read(constants.MSG_SIZE)
                 file.write(data)
                 write += constants.MSG_SIZE
-
 
         except LostConnectionError:
             logging.error("Lost connection to client. ")

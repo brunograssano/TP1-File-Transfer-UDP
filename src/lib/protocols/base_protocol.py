@@ -35,7 +35,7 @@ class BaseProtocol:
                 self.socket.setaddress(address)
 
                 segment = RDTPSegment.from_bytes(answer)
-                return not segment.header.fin
+                return not segment.header.fin, InitialMessage.from_bytes(segment.data).file_size
 
             except timeout:
                 attempts += 1
