@@ -13,11 +13,12 @@ import lib.constants as constants
 from lib.protocols.base_protocol import LostConnectionError
 class UploadClientThread(threading.Thread):
 
-    def __init__(self, server, initial_message : InitialMessage, client_socket : RDTPStream, storage : str):
+    def __init__(self, server, initial_message : InitialMessage, client_address, storage : str, client_socket: RDTPStream):
         threading.Thread.__init__(self)
         self.file_size = initial_message.get_file_size()
         self.filename = initial_message.get_filename()
         self.storage = storage
+        self.client_address = client_address
         self.filepath =  os.path.join(self.storage, self.filename)
         self.server = server
         self.socket = client_socket
@@ -57,4 +58,4 @@ class UploadClientThread(threading.Thread):
                 os.remove(self.filepath)
         finally:
             self.protocol.close()
-            self.server.remove_client(self.socket.gethost(), self.socket.getport())
+            self.server.remove_client(self.client_address[0], self.client_address[1])

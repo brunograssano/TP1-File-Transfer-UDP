@@ -17,7 +17,7 @@ class RDTPListener():
 
         logging.info("Received a new client request")
         client_socket = RDTPStream.server_client_socket(client_address[0],client_address[1])
-        return InitialMessage.from_bytes(segment.data), client_socket
+        return InitialMessage.from_bytes(segment.data), client_socket, client_address
 
     def close(self):
         self.welcoming_socket.close()
