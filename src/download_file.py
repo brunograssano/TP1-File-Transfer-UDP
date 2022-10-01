@@ -1,43 +1,59 @@
+import os
 import sys
 import logging
 import lib.constants as constants
 from lib.parser import download_parser
 from lib.protocols.stop_and_wait import StopAndWait
 from lib.protocols.go_back_n import GoBackN
+from src.lib.file_manager import FileManager
+from src.lib.log import set_up_logger
+from src.lib.protocols.base_protocol import LostConnectionError
+from src.lib.rdtpstream import RDTPStream
 
-def get_client(stop_and_wait_mode):
-    if stop_and_wait_mode:
-        return StopAndWait()
-    else:
-        return GoBackN()
+def download(server_name: str, server_port: int, dst:str, file_name: str, is_saw : bool):
 
-def main() -> None:
+    if not os.path.isdir(dst):
+        os.makedirs(dst, exist_ok=True)
+
+    client_socket = RDTPStream.client_socket(server_name,server_port)
+    
+    if is_saw:
+        protocol = StopAndWait(client_socket)
+    else: 
+        protocol = GoBackN()
+    file = None
     try:
-        
+        can_download, file_size = protocol.send_handshake(file_size, file_name)
+        if not can_download:
+            protocol.close()
+            logging.error("File not found in server")
+            return
 
-        args = download_parser()
-        #args = parser.parse_args()
-        print(args)
-        
-        stop_and_wait_mode = args.stop_and_wait
-        # todo chequear que tengo espacio para guardar
-        # el archivo que quiero descargar
+        file_path = os.path.join(dst,file_name)
 
-        # todo validar protocolo
-        # todo obtener cliente
-        client = get_client(stop_and_wait_mode)
-        # todo descargar archivo
-        result = client.download_file(
-            args.dst, args.name, args.host, args.port)
+        file = FileManager(file_path, "wb")
+        while file_size > 0:        
+            read_size = min(file_size, constants.MSG_SIZE)
+            data = protocol.read(read_size)
+            file.write(data)
+            file_size = file_size - read_size
 
-        sys.exit(result)
-    # !manejo errores
-    except Exception:
-        
-        sys.exit(1)
+        file.close()
+
+    except LostConnectionError:
+        if file is not None:
+            file.close()
+            file_path = os.path.join(dst,file_name)
+            os.remove(file_path)
+        logging.error("Lost connection error")
+
+    finally:
+        protocol.close()
 
 
 if __name__ == '__main__':
-    # args = download_parser()
-    # set_up_logger(args, constants.DOWNLOAD_LOG_FILENAME)
-    main()
+    args = download_parser()
+    set_up_logger(args, constants.DOWNLOAD_LOG_FILENAME)
+    logging.info("Starting client")
+    download(args.host[0],args.port[0],args.dst[0],args.name[0],args.stop_and_wait)
+    logging.info("End of execution")

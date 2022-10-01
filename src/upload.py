@@ -24,9 +24,9 @@ def upload(server_name: str, server_port: int, src:str, file_name: str, is_saw :
     client_socket = RDTPStream.client_socket(server_name,server_port)
     
     if is_saw:
-        protocol = StopAndWait(client_socket, 1)
+        protocol = StopAndWait(client_socket)
     else: 
-        protocol = GoBackN(1)
+        protocol = GoBackN()
 
     can_send = protocol.send_handshake(file_size, file_name)
     if not can_send:
@@ -38,7 +38,7 @@ def upload(server_name: str, server_port: int, src:str, file_name: str, is_saw :
     while file_size > 0:
         read_size = min(file_size, constants.MSG_SIZE)
         data = file.read(read_size)
-        protocol.send(data, server_name, server_port)
+        protocol.send(data)
         file_size = file_size - read_size
 
     file.close()
