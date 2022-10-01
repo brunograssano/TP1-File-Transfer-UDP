@@ -1,3 +1,4 @@
+import logging
 from socket import *
 
 class RDTPStream():
@@ -38,7 +39,7 @@ class RDTPStream():
     def getport(self):
         return self.socket.getsockname()[1]
 
-    def read(self,buffersize):
+    def read(self,buffersize :int):
         message, clientAddress = self.socket.recvfrom(buffersize)
         return message, clientAddress
 
@@ -46,4 +47,6 @@ class RDTPStream():
         self.socket.sendto(message, (ip, port))
 
     def close(self):
+        logging.debug("Closing socket")
+        self.socket.shutdown() 
         self.socket.close()
