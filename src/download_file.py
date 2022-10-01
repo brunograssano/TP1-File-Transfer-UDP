@@ -5,10 +5,10 @@ import lib.constants as constants
 from lib.parser import download_parser
 from lib.protocols.stop_and_wait import StopAndWait
 from lib.protocols.go_back_n import GoBackN
-from src.lib.file_manager import FileManager
-from src.lib.log import set_up_logger
-from src.lib.protocols.base_protocol import LostConnectionError
-from src.lib.rdtpstream import RDTPStream
+from lib.file_manager import FileManager
+from lib.log import set_up_logger
+from lib.protocols.base_protocol import LostConnectionError
+from lib.rdtpstream import RDTPStream
 
 def download(server_name: str, server_port: int, dst:str, file_name: str, is_saw : bool):
 
