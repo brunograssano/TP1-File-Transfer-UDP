@@ -9,6 +9,7 @@ from lib.parser import upload_parser
 from lib.protocols.go_back_n import GoBackN
 from lib.protocols.stop_and_wait import StopAndWait
 from lib.log import set_up_logger
+from lib.protocols.base_protocol import LostConnectionError
 import lib.constants as constants
 
 def upload(server_name: str, server_port: int, src:str, file_name: str, is_saw : bool):
@@ -28,22 +29,28 @@ def upload(server_name: str, server_port: int, src:str, file_name: str, is_saw :
     else: 
         protocol = GoBackN(1)
 
-    can_send = protocol.send_handshake(file_size, file_name)
-    if not can_send:
+    file = None
+    try:
+        can_send = protocol.send_handshake(file_size, file_name)
+        if not can_send:
+            protocol.close()
+            logging.error("Server does not have enough free disk")
+            return
+
+        file = FileManager(file_path, "rb")
+        while file_size > 0:
+            read_size = min(file_size, constants.MSG_SIZE)
+            data = file.read(read_size)
+            protocol.send(data, server_name, server_port)
+            file_size = file_size - read_size
+
+    except LostConnectionError:
+        logging.error("Lost connection to server. ")
+    finally:
+        if file is not None:
+            file.close()
         protocol.close()
-        logging.error("Server does not have enough free disk or is unreachable")
-        return
-
-    file = FileManager(file_path, "rb")
-    while file_size > 0:
-        read_size = min(file_size, constants.MSG_SIZE)
-        data = file.read(read_size)
-        protocol.send(data, server_name, server_port)
-        file_size = file_size - read_size
-
-    file.close()
-    protocol.close()
-
+        
 
 if __name__ == '__main__':
     args = upload_parser()
