@@ -31,6 +31,7 @@ class UploadClientThread(threading.Thread):
             os.makedirs(self.storage, exist_ok=True)
 
         total, used, free = shutil.disk_usage(self.storage)
+
         file = None
         try:
             segment = self.protocol.listen_to_handshake(self.file_size < free)
@@ -38,12 +39,17 @@ class UploadClientThread(threading.Thread):
             if free < self.file_size:
                 return
 
-            file = FileManager(self.filename,"wb",0)
-            read = 0
-            while read < self.file_size:
+            file_path = os.path.join(self.storage,self.filename)
+            new_file_path = file_path.split('\x00')[0]
+            file = FileManager(new_file_path,"wb",0)
+
+            write = 0
+            print("tamanio de archivo: ", self.file_size)
+            while write < self.file_size:
                 data = self.protocol.read(constants.MSG_SIZE)
                 file.write(data)
-            file.close()
+                write += constants.MSG_SIZE
+
 
         except LostConnectionError:
             logging.error("Lost connection to client. ")

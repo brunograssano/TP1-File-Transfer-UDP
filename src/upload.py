@@ -27,7 +27,7 @@ def upload(server_name: str, server_port: int, src:str, file_name: str, is_saw :
     if is_saw:
         protocol = StopAndWait(client_socket)
     else: 
-        protocol = GoBackN(1)
+        protocol = GoBackN()
 
     file = None
     try:

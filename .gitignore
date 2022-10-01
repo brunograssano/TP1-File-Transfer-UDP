@@ -1,4 +1,6 @@
 *logfile_download.txt
+storage/
+R
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

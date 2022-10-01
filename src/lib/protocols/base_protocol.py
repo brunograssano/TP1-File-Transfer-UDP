@@ -39,6 +39,7 @@ class BaseProtocol:
         
         raise LostConnectionError("Lost connection error")
 
+
     def listen_to_handshake(self, is_space_available):
         header = RDTPHeader(0, 0, not is_space_available)
         segment = RDTPSegment(bytearray([]), header)
