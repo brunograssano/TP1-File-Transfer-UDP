@@ -10,6 +10,7 @@ from lib.protocols.stop_and_wait import StopAndWait
 from lib.protocols.go_back_n import GoBackN
 
 import lib.constants as constants
+from lib.protocols.base_protocol import LostConnectionError
 class UploadClientThread(threading.Thread):
 
     def __init__(self, server, initial_message : InitialMessage, client_socket : RDTPStream, storage : str):
@@ -30,19 +31,25 @@ class UploadClientThread(threading.Thread):
             os.makedirs(self.storage, exist_ok=True)
 
         total, used, free = shutil.disk_usage(self.storage)
-        segment = self.protocol.listen_to_handshake(self.file_size < free)
-        
-        if free < self.file_size:
+        file = None
+        try:
+            segment = self.protocol.listen_to_handshake(self.file_size < free)
+            
+            if free < self.file_size:
+                return
+
+            file = FileManager(self.filename,"wb",0)
+            read = 0
+            while read < self.file_size:
+                data = self.protocol.read(constants.MSG_SIZE)
+                file.write(data)
+            file.close()
+
+        except LostConnectionError:
+            logging.error("Lost connection to client. ")
+            if file is not None:
+                file.close()
+                os.remove(self.filename) # TODO remplazar por el path
+        finally:
             self.protocol.close()
             self.server.remove_client(self.socket.gethost(), self.socket.getport())
-            return
-
-        file = FileManager(self.filename,"wb",0)
-        read = 0
-        while read < self.file_size:
-            data = self.protocol.read(constants.MSG_SIZE)
-            file.write(data)
-
-        file.close()
-        self.protocol.close()
-        self.server.remove_client(self.socket.gethost(), self.socket.getport())
