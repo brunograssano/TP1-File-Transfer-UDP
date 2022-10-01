@@ -21,12 +21,12 @@ class Server:
         logging.info("Ready to receive connections")
         while True:
             initial_message, client_socket, client_address = self.server_socket.listen()
-            logging.info("Received connection")
             self.add_client(initial_message, client_address, client_socket)
 
     def add_client(self, initial_message, client_address, client_socket):
         self.client_mutex.acquire()
         if (client_address[0], client_address[1]) not in self.clients:
+            logging.info("Received a new client request")
             if initial_message.is_upload():
                 thread = UploadClientThread(self, initial_message, client_address, self.storage, client_socket)
             else:

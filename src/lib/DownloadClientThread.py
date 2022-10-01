@@ -1,4 +1,4 @@
-from asyncio import constants
+import lib.constants as constants
 import logging
 import os
 import shutil
@@ -17,7 +17,6 @@ class DownloadClientThread(threading.Thread):
     def __init__(self, server, initial_message : InitialMessage, client_address, storage : str,  client_socket : RDTPStream):
         threading.Thread.__init__(self)
         self.client_socket = client_socket
-        self.file_size = initial_message.get_file_size()
         self.filename = initial_message.get_filename()
         self.storage = storage
         self.server = server
@@ -27,22 +26,20 @@ class DownloadClientThread(threading.Thread):
         else:
             self.protocol = GoBackN()
 
-        #al final de todo o antes de cualquier return:
-        self.server.remove_client(self.client_address[0], self.client_address[1])
-
     def run(self):
         file_path = os.path.join(self.storage, self.filename)
         if not os.path.isfile(file_path):
             logging.error(f"File in {file_path} doesn't exists")
-            segment = self.protocol.listen_to_handshake(True, self.file_size) # TODO Agregar file size
+            segment = self.protocol.listen_to_handshake(True, 0, self.filename, False)
             return
 
+        file_size = os.path.getsize(file_path)
         file = None
-
+        logging.debug(f"Sending file {self.filename} of {file_size} to client")
         try:
-            segment = self.protocol.listen_to_handshake(True, self.file_size) # TODO Agregar file size
+            segment = self.protocol.listen_to_handshake(True, file_size, self.filename, False)
 
-            file = FileManager(self.filename,"rb",0)
+            file = FileManager(self.filename,"rb")
 
             while file_size > 0:
                 read_size = min(file_size, constants.MSG_SIZE)
@@ -58,5 +55,7 @@ class DownloadClientThread(threading.Thread):
             if file is not None:
                 file.close()
             self.protocol.close()
+        
+        self.server.remove_client(self.client_address[0], self.client_address[1])
             
 
