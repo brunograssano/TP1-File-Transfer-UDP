@@ -9,6 +9,7 @@ from lib.file_manager import FileManager
 from lib.protocols.base_protocol import LostConnectionError
 from lib.protocols.go_back_n import GoBackN
 from lib.protocols.stop_and_wait import StopAndWait
+from lib.file_manager import FileManagerError
 
 # Thread del lado del server que va a manejar la descarga
 class DownloadClientThread(threading.Thread):
@@ -46,6 +47,8 @@ class DownloadClientThread(threading.Thread):
                 self.protocol.send(data)
                 file_size = file_size - read_size
 
+        except FileManagerError:
+            logging.error("Error with file manager, finishing connection")
         except LostConnectionError:            
             logging.error("Lost connection to client. ")
         finally:

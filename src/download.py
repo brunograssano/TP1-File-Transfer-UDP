@@ -9,11 +9,14 @@ from lib.file_manager import FileManager
 from lib.log import set_up_logger
 from lib.protocols.base_protocol import LostConnectionError
 from lib.rdtpstream import RDTPStream
+from lib.file_manager import FileManagerError
 
 def download(server_name: str, server_port: int, dst:str, file_name: str, is_saw : bool):
 
     if not os.path.isdir(dst):
         os.makedirs(dst, exist_ok=True)
+
+    file_path = os.path.join(dst,file_name)
 
     client_socket = RDTPStream.client_socket(server_name,server_port)
     
@@ -26,11 +29,8 @@ def download(server_name: str, server_port: int, dst:str, file_name: str, is_saw
     try:
         can_download, file_size = protocol.send_handshake(0, file_name, False)
         if not can_download:
-            protocol.close()
             logging.error("File not found in server")
             return
-
-        file_path = os.path.join(dst,file_name)
 
         file = FileManager(file_path, "wb")
         while file_size > 0:        
@@ -41,13 +41,13 @@ def download(server_name: str, server_port: int, dst:str, file_name: str, is_saw
 
         file.close()
 
+    except FileManagerError:
+        logging.error("Error with file manager, finishing connection")
     except LostConnectionError:
         if file is not None:
             file.close()
-            file_path = os.path.join(dst,file_name)
             os.remove(file_path)
         logging.error("Lost connection error")
-
     finally:
         protocol.close()
 
