@@ -5,7 +5,7 @@ class FileManagerError(Exception):
 
 class FileManager:
 
-    def __init__(self, file_name: str, mode: str, read_size: int):
+    def __init__(self, file_name: str, mode: str):
         """Creates a file manager
         Params:
         * file_name: The name of the file to open
@@ -19,7 +19,7 @@ class FileManager:
         try:
             self.file = open(file_name,mode)
             logging.debug("Opened file with name: " + file_name)
-        except Exception:
+        except Exception as e:
             logging.error("Error opening file with name: " + file_name)
             raise FileManagerError("Error opening file")
 

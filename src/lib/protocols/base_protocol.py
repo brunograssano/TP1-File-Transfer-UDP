@@ -26,7 +26,7 @@ class BaseProtocol:
         self.socket.settimeout(const.CLIENT_HANDSHAKE_TIMEOUT)
         while attempts < const.TIMEOUT_RETRY_ATTEMPTS:
             try:
-                self.socket.send(segment.as_bytes(), self.socket.host, self.socket.port)
+                self.socket.send(segment.as_bytes())
                 answer, address = self.socket.read(const.MSG_SIZE)
                 self.socket.setaddress(address)
 
@@ -39,6 +39,7 @@ class BaseProtocol:
         
         raise LostConnectionError("Lost connection error")
 
+
     def listen_to_handshake(self, is_space_available):
         header = RDTPHeader(0, 0, not is_space_available)
         segment = RDTPSegment(bytearray([]), header)
@@ -47,7 +48,7 @@ class BaseProtocol:
         self.socket.settimeout(const.SERVER_HANDSHAKE_TIMEOUT)
         while attempts < const.TIMEOUT_RETRY_ATTEMPTS:
             try:
-                self.socket.send(segment.as_bytes(), self.socket.gethost(), self.socket.getport())
+                self.socket.send(segment.as_bytes())
                 answer, _ = self.socket.read(const.MSG_SIZE)
                 segment = RDTPSegment.from_bytes(answer)
                 return segment
@@ -62,7 +63,7 @@ class BaseProtocol:
         logging.debug("Ending connection")
         header = RDTPHeader(self.seq_num, self.ack_num, True)
         segment = RDTPSegment(bytearray([]), header)
-        self.socket.send(segment.as_bytes(), self.socket.gethost(), self.socket.getport())
+        self.socket.send(segment.as_bytes())
 
         self.socket.close()
 
