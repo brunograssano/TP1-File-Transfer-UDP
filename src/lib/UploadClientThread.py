@@ -11,6 +11,7 @@ from lib.protocols.go_back_n import GoBackN
 
 import lib.constants as constants
 from lib.protocols.base_protocol import LostConnectionError
+from lib.file_manager import FileManagerError
 class UploadClientThread(threading.Thread):
 
     def __init__(self, server, initial_message : InitialMessage, client_address, storage : str, client_socket: RDTPStream):
@@ -36,10 +37,11 @@ class UploadClientThread(threading.Thread):
 
         file = None
         try:
-            segment = self.protocol.listen_to_handshake(self.file_size < free)
+            segment = self.protocol.listen_to_handshake(self.file_size < free, self.file_size, self.filename, True)
             if free < self.file_size:
                 return
 
+            logging.debug(f"Receiving file {self.filename} of {self.file_size} from client")
             file = FileManager(self.filepath,"wb")
 
             write = 0
@@ -48,7 +50,8 @@ class UploadClientThread(threading.Thread):
                 file.write(data)
                 write += constants.MSG_SIZE
 
-
+        except FileManagerError:
+            logging.error("Error with file manager, finishing connection")
         except LostConnectionError:
             logging.error("Lost connection to client. ")
             if file is not None:
