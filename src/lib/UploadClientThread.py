@@ -12,11 +12,13 @@ from lib.protocols.go_back_n import GoBackN
 import lib.constants as constants
 class UploadClientThread(threading.Thread):
 
-    def __init__(self, initial_message : InitialMessage, client_socket : RDTPStream, storage : str):
+    def __init__(self, server, initial_message : InitialMessage, client_socket : RDTPStream, storage : str):
         threading.Thread.__init__(self)
         self.file_size = initial_message.get_file_size()
         self.filename = initial_message.get_filename()
         self.storage = storage
+        self.server = server
+        self.socket = client_socket
         if initial_message.is_stop_and_wait():
             self.protocol = StopAndWait(client_socket)
         else:
@@ -32,6 +34,7 @@ class UploadClientThread(threading.Thread):
         
         if free < self.file_size:
             self.protocol.close()
+            self.server.remove_client(self.socket.gethost(), self.socket.getport())
             return
 
         file = FileManager(self.filename,"wb",0)
@@ -42,3 +45,4 @@ class UploadClientThread(threading.Thread):
 
         file.close()
         self.protocol.close()
+        self.server.remove_client(self.socket.gethost(), self.socket.getport())
