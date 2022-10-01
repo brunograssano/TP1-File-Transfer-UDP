@@ -40,4 +40,5 @@ class InitialMessage():
     def from_bytes(bytes):
         """Decodes the bytes into an initial message in Big Endian"""
         data = struct.unpack(INITIAL_MESSAGE_FORMAT_STRING, bytes)
-        return InitialMessage(data[0], data[1], data[2], data[3].decode())
+        filename = data[3].decode().split('\x00')[0]
+        return InitialMessage(data[0], data[1], data[2], filename)

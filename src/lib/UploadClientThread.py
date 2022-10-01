@@ -18,6 +18,7 @@ class UploadClientThread(threading.Thread):
         self.file_size = initial_message.get_file_size()
         self.filename = initial_message.get_filename()
         self.storage = storage
+        self.filepath =  os.path.join(self.storage, self.filename)
         self.server = server
         self.socket = client_socket
         if initial_message.is_stop_and_wait():
@@ -39,9 +40,7 @@ class UploadClientThread(threading.Thread):
             if free < self.file_size:
                 return
 
-            file_path = os.path.join(self.storage,self.filename)
-            new_file_path = file_path.split('\x00')[0]
-            file = FileManager(new_file_path,"wb",0)
+            file = FileManager(self.filepath,"wb",0)
 
             write = 0
             print("tamanio de archivo: ", self.file_size)
@@ -55,7 +54,7 @@ class UploadClientThread(threading.Thread):
             logging.error("Lost connection to client. ")
             if file is not None:
                 file.close()
-                os.remove(self.filename) # TODO remplazar por el path
+                os.remove(self.filepath)
         finally:
             self.protocol.close()
             self.server.remove_client(self.socket.gethost(), self.socket.getport())
