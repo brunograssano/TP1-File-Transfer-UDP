@@ -19,7 +19,7 @@ class StopAndWait(BaseProtocol):
 
     def send(self, data):
         self.seq_num += 1
-        head = rdtp_header.RDTPHeader(seq_num=self.seq_num, ack_num= self.ack_num, window=0, ack_only=False, fin=False)
+        head = rdtp_header.RDTPHeader(seq_num=self.seq_num, ack_num=self.ack_num, fin=False)
         message = protocol.RDTPSegment(data=data, header=head)
         attempts = 0
         while attempts < const.TIMEOUT_RETRY_ATTEMPTS:
@@ -60,7 +60,7 @@ class StopAndWait(BaseProtocol):
                     self.ack_num = segment.header.seq_num
                     is_new_data = True
                 #! si no actualizamos el ack num, es porque el paquete se perdio, y hay que volver a hacer ack de lo viejo
-                head = rdtp_header.RDTPHeader(seq_num=self.seq_num, ack_num= self.ack_num, window=0, ack_only=True, fin=False)
+                head = rdtp_header.RDTPHeader(seq_num=self.seq_num, ack_num=self.ack_num, fin=False)
                 ack_message = protocol.RDTPSegment(data=bytearray([]), header=head)
                 self.socket.send(ack_message.as_bytes())
                 if is_new_data:
