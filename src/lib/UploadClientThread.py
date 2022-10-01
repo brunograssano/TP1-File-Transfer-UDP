@@ -33,12 +33,18 @@ class UploadClientThread(threading.Thread):
         if free < self.file_size:
             self.protocol.close()
             return
-
-        file = FileManager(self.filename,"wb",0)
-        read = 0
-        while read < self.file_size:
+        file_path = os.path.join(self.storage,self.filename)
+        new_file_path = file_path.split('\x00')[0]
+        file = FileManager(new_file_path,"wb",0)
+        # todo solucionar como actualizar el puntero write
+        write = 0
+        print("tamanio de archivo: ", self.file_size)
+        while write < self.file_size:
+            print("puntero: ", write)
             data = self.protocol.read(constants.MSG_SIZE)
             file.write(data)
+            # actualizar puntero
+            write += constants.MSG_SIZE
 
         file.close()
         self.protocol.close()

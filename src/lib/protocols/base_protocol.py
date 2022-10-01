@@ -35,8 +35,8 @@ class BaseProtocol:
 
             except timeout:
                 attempts += 1
-                continue 
-        
+                continue
+
         return False
 
     def listen_to_handshake(self, is_space_available):

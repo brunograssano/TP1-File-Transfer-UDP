@@ -19,7 +19,7 @@ class FileManager:
         try:
             self.file = open(file_name,mode)
             logging.debug("Opened file with name: " + file_name)
-        except Exception:
+        except Exception as e:
             logging.error("Error opening file with name: " + file_name)
             raise FileManagerError("Error opening file")
 
