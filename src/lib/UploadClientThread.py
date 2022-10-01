@@ -21,7 +21,7 @@ class UploadClientThread(threading.Thread):
         if initial_message.is_stop_and_wait():
             self.protocol = StopAndWait(client_socket)
         else:
-            self.protocol = GoBackN()
+            self.protocol = GoBackN(client_socket)
 
     def run(self):
         if not os.path.isdir(self.storage):

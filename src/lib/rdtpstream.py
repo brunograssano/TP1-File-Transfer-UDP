@@ -39,12 +39,20 @@ class RDTPStream():
     def getport(self):
         return self.socket.getsockname()[1]
 
-    def read(self,buffersize :int):
-        message, clientAddress = self.socket.recvfrom(buffersize)
+    def setblocking(flag):
+        self.socket.setblocking(flag)
+
+    def read(self,buffersize :int, wait=True):
+        message, clientAddress = (None, None)
+        ready = select.select([self.conn_socket], [], [], self.timeout if wait else 0)
+        if ready[0]:
+            message, clientAddress = self.socket.recvfrom(buffersize)
+        elif wait:
+            raise socket.timeout
         return message, clientAddress
 
-    def send(self, message, ip, port):
-        self.socket.sendto(message, (ip, port))
+    def send(self, message):
+        self.socket.sendto(message, (self.host, self.port))
 
     def close(self):
         logging.debug("Closing socket")
