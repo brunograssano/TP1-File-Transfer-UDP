@@ -20,7 +20,7 @@ def client_parser(description):
     parser = common_parser(description)
     group_transfer = parser.add_mutually_exclusive_group()
     group_transfer.add_argument("-saw", "--stop_and_wait",action='store_true', help="choose Stop and Wait transfer")
-    group_transfer.add_argument("-gbn", "--go_back_n", help="choose Go Back N transfer")
+    group_transfer.add_argument("-gbn", "--go_back_n", action='store_true', help="choose Go Back N transfer")
     parser.add_argument('-n','--name',nargs=1, dest='name', required=True, metavar="FILENAME",action='store',help='file name')
     return parser    
 
