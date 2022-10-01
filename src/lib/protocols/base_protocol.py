@@ -37,7 +37,7 @@ class BaseProtocol:
                 attempts += 1
                 continue 
         
-        return False
+        raise LostConnectionError("Lost connection error")
 
     def listen_to_handshake(self, is_space_available):
         header = RDTPHeader(0, 0, not is_space_available)
@@ -56,16 +56,20 @@ class BaseProtocol:
                 attempts += 1
                 continue
 
+        raise LostConnectionError("Lost connection error")
+
     def close(self):
         logging.debug("Ending connection")
         header = RDTPHeader(self.seq_num, self.ack_num, True)
         segment = RDTPSegment(bytearray([]), header)
         self.socket.send(segment.as_bytes(), self.socket.gethost(), self.socket.getport())
 
+        self.socket.close()
+
     def send(self, data):
         raise NotImplementedError()
     
-    def read(self, buffer_size):
+    def read(self, buffer_size :int):
         raise NotImplementedError()
 
 
