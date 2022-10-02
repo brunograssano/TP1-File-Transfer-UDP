@@ -32,7 +32,7 @@ class GoBackN(BaseProtocol):
 
         #If the window isnt full, send packet
         if len(self.messages_not_acked) < self.window_size:
-            logging.debug(f"Socket in host: {self.socket.host} and port: {self.socket.port} sending message with seq_num: {self.seq_num}")
+            logging.debug(f"Window isnt full, sending packet to host: {self.socket.host} and port: {self.socket.port} sending message with seq_num: {self.seq_num}")
             self.socket.send(message.as_bytes())
             self.messages_not_acked.append(message)
             sent = True
@@ -51,7 +51,7 @@ class GoBackN(BaseProtocol):
             if len(self.messages_not_acked) == self.window_size:
                 self.await_ack()
             # reattempt to send after wait
-            logging.debug(f"Socket in host: {self.socket.host} and port: {self.socket.port} sending message with seq_num: {self.seq_num}")
+            logging.debug(f"Window was full, sending packet to host: {self.socket.host} and port: {self.socket.port} sending message with seq_num: {self.seq_num}")
             self.socket.send(message.as_bytes())
             self.messages_not_acked.append(message)
 
