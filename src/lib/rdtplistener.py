@@ -23,7 +23,7 @@ class RDTPListener():
                 segment = RDTPSegment.from_bytes(message)
                 initial_msg = InitialMessage.from_bytes(segment.data)
             except struct.error as error:
-                logging.error(error)
+                logging.error(f"Conversion error {error}")
                 continue
 
             logging.debug("Client request coming from: " + str(client_address))

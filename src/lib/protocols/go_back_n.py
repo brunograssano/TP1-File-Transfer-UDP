@@ -43,7 +43,7 @@ class GoBackN(BaseProtocol):
                 ack_segment = protocol.RDTPSegment.from_bytes(ack_bytes)
                 self.remove_in_flight_messages(ack_segment)
             except struct.error as error:
-                logging.error(error)
+                logging.error(f"Conversion error {error}")
 
         # If the window was full => block until there is room
         if not sent:
@@ -77,7 +77,7 @@ class GoBackN(BaseProtocol):
             if ack_bytes is not None and self.remove_in_flight_messages(protocol.RDTPSegment.from_bytes(ack_bytes)):
                 self.tries = 0
         except (socket.timeout, struct.error) as error:
-            logging.error(error)
+            logging.error(f"Timeout or conversion error {error}")
             if not self.messages_not_acked:
                 return
             # Re-send unacknowledged pkts
@@ -94,7 +94,7 @@ class GoBackN(BaseProtocol):
                 segment_bytes, _ = self.socket.read(buffer_size)
                 segment = protocol.RDTPSegment.from_bytes(segment_bytes)
             except (socket.timeout, struct.error) as error:
-                logging.error(error)
+                logging.error(f"Timeout or conversion error {error}")
                 attempts += 1
                 continue
 

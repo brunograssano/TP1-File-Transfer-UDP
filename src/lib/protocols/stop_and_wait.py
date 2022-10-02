@@ -29,7 +29,7 @@ class StopAndWait(BaseProtocol):
                 return
 
             except (timeout, struct.error) as error:
-                logging.error(error)
+                logging.error(f"Timeout or conversion error {error}")
                 attempts += 1
                 continue
 
@@ -45,7 +45,7 @@ class StopAndWait(BaseProtocol):
                 segment_bytes, _ = self.socket.read(buffer_size)
                 segment = protocol.RDTPSegment.from_bytes(segment_bytes)
             except (timeout, struct.error) as error:
-                logging.error(error)
+                logging.error(f"Timeout or conversion error {error}")
                 attempts += 1
                 continue
 

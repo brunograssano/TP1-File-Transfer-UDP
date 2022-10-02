@@ -45,7 +45,7 @@ class BaseProtocol:
                 return not response_segment.header.fin, initial_msg_response.file_size
 
             except (timeout, struct.error) as error:
-                logging.error(error)
+                logging.error(f"Timeout or conversion error {error}")
                 attempts += 1
                 continue 
         
@@ -73,7 +73,7 @@ class BaseProtocol:
                 return segment
 
             except (timeout, struct.error) as error:
-                logging.error(error)
+                logging.error(f"Timeout or conversion error {error}")
                 attempts += 1
                 continue
 
