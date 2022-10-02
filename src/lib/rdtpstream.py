@@ -4,6 +4,8 @@ import socket
 
 import lib.constants as const
 
+from lib.segments.headers.RDTPHeader import RDTPHeader
+
 class RDTPStream():
     def __init__(self, host, port):
         self.host = host
@@ -49,9 +51,10 @@ class RDTPStream():
         message, clientAddress = (None, None)
         ready = select.select([self.socket], [], [], const.CLIENT_STOP_AND_WAIT_TIMEOUT if wait else 0)
         if ready[0]:
-            message, clientAddress = self.socket.recvfrom(buffersize)
+            message, clientAddress = self.socket.recvfrom(buffersize + RDTPHeader.size())
         elif wait:
             raise socket.timeout
+
         return message, clientAddress
 
     def send(self, message):
