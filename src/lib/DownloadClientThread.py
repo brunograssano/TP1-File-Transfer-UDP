@@ -24,7 +24,7 @@ class DownloadClientThread(threading.Thread):
         if initial_message.is_stop_and_wait():
             self.protocol = StopAndWait(client_socket)
         else:
-            self.protocol = GoBackN()
+            self.protocol = GoBackN(client_socket)
 
     def run(self):
         file_path = os.path.join(self.storage, self.filename)

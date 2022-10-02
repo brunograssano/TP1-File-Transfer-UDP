@@ -41,19 +41,18 @@ class StopAndWait(BaseProtocol):
             try:
                 segment_bytes, _ = self.socket.read(buffer_size)
                 segment = protocol.RDTPSegment.from_bytes(segment_bytes)
-
-                if segment.header.seq_num == (self.ack_num + 1):
-                    self.ack_num = segment.header.seq_num
-                    is_new_data = True
-                
-                head = rdtp_header.RDTPHeader(seq_num=self.seq_num, ack_num=self.ack_num, fin=False)
-                ack_message = protocol.RDTPSegment(data=bytearray([]), header=head)
-                self.socket.send(ack_message.as_bytes())
-                if is_new_data:
-                    return segment.data
-
             except timeout:
                 attempts += 1
                 continue
+
+            if segment.header.seq_num == (self.ack_num + 1):
+                self.ack_num = segment.header.seq_num
+                is_new_data = True
+
+            head = rdtp_header.RDTPHeader(seq_num=self.seq_num, ack_num=self.ack_num, fin=False)
+            ack_message = protocol.RDTPSegment(data=bytearray([]), header=head)
+            self.socket.send(ack_message.as_bytes())
+            if is_new_data:
+                return segment.data
 
         raise LostConnectionError("Lost connection error")
