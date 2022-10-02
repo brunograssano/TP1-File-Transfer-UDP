@@ -21,7 +21,6 @@ class Server:
         logging.info("Ready to receive connections")
         while True:
             initial_message, client_socket, client_address = self.server_socket.listen()
-            logging.info("Received connection {} y {}".format(client_socket, client_address))
             self.add_client(initial_message, client_address, client_socket)
 
     def add_client(self, initial_message, client_address, client_socket):
