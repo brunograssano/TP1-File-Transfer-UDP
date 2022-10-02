@@ -1,4 +1,6 @@
+import logging
 from socket import timeout
+import struct
 
 
 import lib.segments.RDTPSegment as protocol
@@ -26,7 +28,8 @@ class StopAndWait(BaseProtocol):
                 self.ack_num = ack_segment.header.ack_num
                 return
 
-            except timeout:
+            except (timeout, struct.error) as error:
+                logging.error(error)
                 attempts += 1
                 continue
 
@@ -41,7 +44,8 @@ class StopAndWait(BaseProtocol):
             try:
                 segment_bytes, _ = self.socket.read(buffer_size)
                 segment = protocol.RDTPSegment.from_bytes(segment_bytes)
-            except timeout:
+            except (timeout, struct.error) as error:
+                logging.error(error)
                 attempts += 1
                 continue
 

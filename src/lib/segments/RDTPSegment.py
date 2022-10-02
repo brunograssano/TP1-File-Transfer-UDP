@@ -21,7 +21,7 @@ class RDTPSegment:
     def from_bytes(bytes):
         header_size = RDTPHeader.size()
         header_bytes = bytes[:header_size]
-        rdtp_header = h.from_bytes(header_bytes)
+        rdtp_header = RDTPHeader.from_bytes(header_bytes)
 
         data = bytes[header_size:]
 

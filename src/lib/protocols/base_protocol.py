@@ -1,5 +1,7 @@
+from cmath import e
 import logging
 from socket import timeout
+import struct
 import lib.constants as const
 from socket import socket
 from lib.InitialMessage import InitialMessage
@@ -42,7 +44,8 @@ class BaseProtocol:
 
                 return not response_segment.header.fin, initial_msg_response.file_size
 
-            except timeout:
+            except (timeout, struct.error) as error:
+                logging.error(error)
                 attempts += 1
                 continue 
         
@@ -69,7 +72,8 @@ class BaseProtocol:
                 segment = RDTPSegment.from_bytes(answer)
                 return segment
 
-            except timeout:
+            except (timeout, struct.error) as error:
+                logging.error(error)
                 attempts += 1
                 continue
 
