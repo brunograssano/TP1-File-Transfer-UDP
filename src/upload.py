@@ -1,6 +1,7 @@
 from asyncio import constants
 import logging
 import os
+import signal
 from socket import *
 
 from lib.file_manager import FileManager
@@ -12,6 +13,13 @@ from lib.log import set_up_logger
 from lib.protocols.base_protocol import LostConnectionError
 import lib.constants as constants
 from lib.file_manager import FileManagerError
+
+class SignalException(Exception):
+    pass
+
+
+def signal_handler(sig, frame):
+    raise SignalException()
 
 def upload(server_name: str, server_port: int, src:str, file_name: str, is_saw : bool):
 
@@ -54,8 +62,13 @@ def upload(server_name: str, server_port: int, src:str, file_name: str, is_saw :
         protocol.close()
 
 if __name__ == '__main__':
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
     args = upload_parser()
     set_up_logger(args, constants.UPLOAD_LOG_FILENAME)
     logging.info("Starting client")
-    upload(args.host[0],args.port[0],args.src[0],args.name[0],args.stop_and_wait)
+    try:
+        upload(args.host[0],args.port[0],args.src[0],args.name[0],args.stop_and_wait)
+    except SignalException:
+        logging.error("Signal error, closing download")
     logging.info("End of execution")

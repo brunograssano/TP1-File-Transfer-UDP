@@ -46,4 +46,5 @@ class Server:
     def close(self):
         self.server_socket.close()
         for client in self.client_threads:
+            client.close()
             client.join()
