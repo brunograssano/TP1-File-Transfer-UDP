@@ -113,3 +113,14 @@ optional arguments:
 Este programa permite al usuario subir un nuevo archivo al servidor, en caso de que ya exista será remplazado. . Es necesario indicar el nombre del archivo (`file name`)
 
 Se permite no incluir la direccion, el puerto, y la dirección `src` (Busca en `.`).
+
+### Comcast
+
+Para poder probar la perdida de paquetes se utilizó el programa [comcast](https://github.com/tylertreat/comcast) con las siguientes lineas
+
+```
+comcast --device=lo --packet-loss=10% --target-addr=127.0.0.0/8 --target-proto=udp --target-port=1024:65535
+
+comcast -device=lo0 --stop
+```
+
