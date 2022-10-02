@@ -119,8 +119,9 @@ Se permite no incluir la direccion, el puerto, y la dirección `src` (Busca en `
 Para poder probar la perdida de paquetes se utilizó el programa [comcast](https://github.com/tylertreat/comcast) con las siguientes lineas
 
 ```
+# 'lo' es el nombre de la red
 comcast --device=lo --packet-loss=10% --target-addr=127.0.0.0/8 --target-proto=udp --target-port=1024:65535
 
-comcast -device=lo0 --stop
+comcast -device=lo --stop
 ```
 
