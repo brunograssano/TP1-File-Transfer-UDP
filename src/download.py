@@ -33,7 +33,7 @@ def download(server_name: str, server_port: int, dst:str, file_name: str, is_saw
             return
 
         file = FileManager(file_path, "wb")
-        while file_size > 0:        
+        while file_size > 0:
             read_size = min(file_size, constants.MSG_SIZE)
             data = protocol.read(read_size)
             file.write(data)

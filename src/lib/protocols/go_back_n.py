@@ -32,6 +32,7 @@ class GoBackN(BaseProtocol):
 
         #If the window isnt full, send packet
         if len(self.messages_not_acked) < self.window_size:
+            logging.debug(f"Window isnt full, sending packet to host: {self.socket.host} and port: {self.socket.port} sending message with seq_num: {self.seq_num}")
             self.socket.send(message.as_bytes())
             self.messages_not_acked.append(message)
             sent = True
@@ -50,6 +51,7 @@ class GoBackN(BaseProtocol):
             if len(self.messages_not_acked) == self.window_size:
                 self.await_ack()
             # reattempt to send after wait
+            logging.debug(f"Window was full, sending packet to host: {self.socket.host} and port: {self.socket.port} sending message with seq_num: {self.seq_num}")
             self.socket.send(message.as_bytes())
             self.messages_not_acked.append(message)
 
@@ -61,6 +63,7 @@ class GoBackN(BaseProtocol):
         """
         for i in range(len(self.messages_not_acked)):
             if self.messages_not_acked[i].header.seq_num == ack_segment.header.ack_num:
+                logging.debug(f"acked packet up to num: {i}")
                 self.messages_not_acked = self.messages_not_acked[i + 1 :]
                 return True
         return False
@@ -82,6 +85,7 @@ class GoBackN(BaseProtocol):
                 return
             # Re-send unacknowledged pkts
             attempts += 1
+            logging.debug(f"Timeout without no new ack, resending packets")
             for message in self.messages_not_acked:
                 self.socket.send(message.as_bytes())
 
@@ -105,6 +109,7 @@ class GoBackN(BaseProtocol):
 
             head = rdtp_header.RDTPHeader(seq_num=self.seq_num, ack_num=self.ack_num, fin=False)
             ack_message = protocol.RDTPSegment(data=bytearray([]), header=head)
+            logging.debug(f"Socket in host: {self.socket.host} and port: {self.socket.port} sending message with ack: {self.ack_num}")
             self.socket.send(ack_message.as_bytes())
             if is_new_data:
                 return segment.data
