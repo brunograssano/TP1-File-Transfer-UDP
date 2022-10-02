@@ -58,6 +58,7 @@ class DownloadClientThread(threading.Thread):
                 self.protocol.send(data)
                 file_size = file_size - read_size
 
+            logging.info("End of reading of file")
         except FileManagerError:
             logging.error("Error with file manager, finishing connection")
         except LostConnectionError:            

@@ -52,6 +52,7 @@ def upload(server_name: str, server_port: int, src:str, file_name: str, is_saw :
             protocol.send(data)
             file_size = file_size - read_size
 
+        logging.info("Finished reading file to upload")
     except FileManagerError:
         logging.error("Error with file manager, finishing connection")
     except LostConnectionError:

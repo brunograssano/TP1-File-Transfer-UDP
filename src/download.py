@@ -48,6 +48,7 @@ def download(server_name: str, server_port: int, dst:str, file_name: str, is_saw
             file_size = file_size - read_size
 
         file.close()
+        logging.info("Downloaded file")
 
     except FileManagerError:
         logging.error("Error with file manager, finishing connection")

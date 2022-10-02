@@ -60,6 +60,7 @@ class UploadClientThread(threading.Thread):
                 file.write(data)
                 write += constants.MSG_SIZE
 
+            logging.info("End of client upload of file")
         except FileManagerError:
             logging.error("Error with file manager, finishing connection")
         except LostConnectionError:
