@@ -63,7 +63,7 @@ class GoBackN(BaseProtocol):
         """
         for i in range(len(self.messages_not_acked)):
             if self.messages_not_acked[i].header.seq_num == ack_segment.header.ack_num:
-                logging.debug(f"Socket in host: {self.socket.host} and port: {self.socket.port} acking message: {i}")
+                logging.debug(f"acked packet up to num: {i}")
                 self.messages_not_acked = self.messages_not_acked[i + 1 :]
                 return True
         return False
