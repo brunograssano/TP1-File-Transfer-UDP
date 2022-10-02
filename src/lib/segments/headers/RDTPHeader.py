@@ -24,11 +24,12 @@ class RDTPHeader:
     def as_bytes(self):
         return struct.pack(RDTP_FORMAT_STRING, self.seq_num, self.ack_num, self.fin )
 
+    @staticmethod
+    def size():
+        return struct.calcsize(RDTP_FORMAT_STRING)
 
+# TODO llevar a static method, acomodar sus llamadas
 def from_bytes(bytes):
     data = struct.unpack(RDTP_FORMAT_STRING, bytes)
     header = RDTPHeader(data[0], data[1], data[2])
     return header
-
-def size():
-    return struct.calcsize(RDTP_FORMAT_STRING)

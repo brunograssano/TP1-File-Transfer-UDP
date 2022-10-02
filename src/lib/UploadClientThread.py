@@ -39,6 +39,7 @@ class UploadClientThread(threading.Thread):
         try:
             segment = self.protocol.listen_to_handshake(self.file_size < free, self.file_size, self.filename, True)
             if free < self.file_size:
+                logging.error("There is not enough space for file in disk")
                 return
 
             logging.debug(f"Receiving file {self.filename} of {self.file_size} from client")

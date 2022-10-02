@@ -40,7 +40,7 @@ class BaseProtocol:
                 third_handshake_step_segment = RDTPSegment(bytearray([]), third_handshake_step_header)
                 self.socket.send(third_handshake_step_segment.as_bytes())
 
-                return response_segment.header.fin, initial_msg_response.file_size
+                return not response_segment.header.fin, initial_msg_response.file_size
 
             except timeout:
                 attempts += 1

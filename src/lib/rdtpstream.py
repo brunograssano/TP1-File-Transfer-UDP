@@ -1,6 +1,8 @@
 import logging
 from socket import *
 
+from lib.segments.headers.RDTPHeader import RDTPHeader
+
 class RDTPStream():
     def __init__(self, host, port):
         self.host = host
@@ -40,7 +42,7 @@ class RDTPStream():
         return self.socket.getsockname()[1]
 
     def read(self,buffersize :int):
-        message, clientAddress = self.socket.recvfrom(buffersize)
+        message, clientAddress = self.socket.recvfrom(buffersize + RDTPHeader.size())
         return message, clientAddress
 
     def send(self, message):
