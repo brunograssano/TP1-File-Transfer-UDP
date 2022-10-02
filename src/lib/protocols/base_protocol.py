@@ -33,9 +33,14 @@ class BaseProtocol:
                 self.socket.send(segment.as_bytes())
                 answer, address = self.socket.read(const.MSG_SIZE)
                 self.socket.setaddress(address)
+                response_segment = RDTPSegment.from_bytes(answer)
+                initial_msg_response = InitialMessage.from_bytes(response_segment.data)
 
-                segment = RDTPSegment.from_bytes(answer)
-                return not segment.header.fin, InitialMessage.from_bytes(segment.data).file_size
+                third_handshake_step_header = RDTPHeader(0, 0, response_segment.header.fin)
+                third_handshake_step_segment = RDTPSegment(bytearray([]), third_handshake_step_header)
+                self.socket.send(third_handshake_step_segment.as_bytes())
+
+                return response_segment.header.fin, initial_msg_response.file_size
 
             except timeout:
                 attempts += 1

@@ -30,7 +30,7 @@ class DownloadClientThread(threading.Thread):
         file_path = os.path.join(self.storage, self.filename)
         if not os.path.isfile(file_path):
             logging.error(f"File in {file_path} doesn't exists")
-            segment = self.protocol.listen_to_handshake(True, 0, self.filename, False)
+            segment = self.protocol.listen_to_handshake(False, 0, self.filename, False)
             return
 
         file_size = os.path.getsize(file_path)
@@ -38,6 +38,8 @@ class DownloadClientThread(threading.Thread):
         logging.debug(f"Sending file {self.filename} of {file_size} to client")
         try:
             segment = self.protocol.listen_to_handshake(True, file_size, self.filename, False)
+            if segment.header.fin:
+                return
 
             file = FileManager(self.filename,"rb")
 
