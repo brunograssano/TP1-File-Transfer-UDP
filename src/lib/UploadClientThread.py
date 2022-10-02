@@ -23,10 +23,19 @@ class UploadClientThread(threading.Thread):
         self.filepath =  os.path.join(self.storage, self.filename)
         self.server = server
         self.socket = client_socket
+        self.running = True
+        self.close_lock = threading.Lock()
         if initial_message.is_stop_and_wait():
             self.protocol = StopAndWait(client_socket)
         else:
             self.protocol = GoBackN(client_socket)
+
+    def close(self):
+        self.close_lock.acquire()
+        if self.running:
+            self.protocol.close()
+            self.running = False
+        self.close_lock.release()
 
     def run(self):
         if not os.path.isdir(self.storage):
@@ -58,6 +67,12 @@ class UploadClientThread(threading.Thread):
             if file is not None:
                 file.close()
                 os.remove(self.filepath)
+        except Exception:            
+            logging.error("Closing error. ")
         finally:
-            self.protocol.close()
+            self.close_lock.acquire()
+            if self.running:
+                self.protocol.close()
+                self.running = False
+            self.close_lock.release()
             self.server.remove_client(self.client_address[0], self.client_address[1])

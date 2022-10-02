@@ -1,4 +1,5 @@
 import os
+import signal
 import sys
 import logging
 import lib.constants as constants
@@ -10,6 +11,13 @@ from lib.log import set_up_logger
 from lib.protocols.base_protocol import LostConnectionError
 from lib.rdtpstream import RDTPStream
 from lib.file_manager import FileManagerError
+
+class SignalException(Exception):
+    pass
+
+
+def signal_handler(sig, frame):
+    raise SignalException()
 
 def download(server_name: str, server_port: int, dst:str, file_name: str, is_saw : bool):
 
@@ -53,8 +61,13 @@ def download(server_name: str, server_port: int, dst:str, file_name: str, is_saw
 
 
 if __name__ == '__main__':
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
     args = download_parser()
     set_up_logger(args, constants.DOWNLOAD_LOG_FILENAME)
     logging.info("Starting client")
-    download(args.host[0],args.port[0],args.dst[0],args.name[0],args.stop_and_wait)
+    try:
+        download(args.host[0],args.port[0],args.dst[0],args.name[0],args.stop_and_wait)
+    except SignalException:
+        logging.error("Signal error, closing download")
     logging.info("End of execution")

@@ -25,7 +25,7 @@ if __name__ == '__main__':
         server = Server(args.host[0],args.port[0],args.storage[0])
         server.start_server()
     except SignalException:
-        logging.info("Closing server")
+        logging.info("Signal error, closing server")
     finally:
         if server is not None:
             server.close()
