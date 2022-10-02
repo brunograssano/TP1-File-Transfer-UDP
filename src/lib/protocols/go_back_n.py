@@ -90,7 +90,6 @@ class GoBackN(BaseProtocol):
         attempts = 0
         is_new_data = False
         while attempts < const.TIMEOUT_RETRY_ATTEMPTS:
-            time.sleep(0.1)
             try:
                 segment_bytes, _ = self.socket.read(buffer_size)
                 segment = protocol.RDTPSegment.from_bytes(segment_bytes)
