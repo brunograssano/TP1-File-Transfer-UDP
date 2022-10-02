@@ -1,5 +1,7 @@
+import logging
 import socket
 import os
+import struct
 import time
 
 import lib.constants as const
@@ -37,8 +39,11 @@ class GoBackN(BaseProtocol):
         # Process ACKS without blocking
         ack_bytes, _ = self.socket.read(const.MSG_SIZE, wait=False)
         if ack_bytes is not None:
-           ack_segment = protocol.RDTPSegment.from_bytes(ack_bytes)
-           self.remove_in_flight_messages(ack_segment)
+            try:
+                ack_segment = protocol.RDTPSegment.from_bytes(ack_bytes)
+                self.remove_in_flight_messages(ack_segment)
+            except struct.error as error:
+                logging.error(error)
 
         # If the window was full => block until there is room
         if not sent:
@@ -71,7 +76,8 @@ class GoBackN(BaseProtocol):
             ack_bytes, _ = self.socket.read(const.MSG_SIZE)
             if ack_bytes is not None and self.remove_in_flight_messages(protocol.RDTPSegment.from_bytes(ack_bytes)):
                 self.tries = 0
-        except socket.timeout:
+        except (socket.timeout, struct.error) as error:
+            logging.error(error)
             if not self.messages_not_acked:
                 return
             # Re-send unacknowledged pkts
@@ -88,7 +94,8 @@ class GoBackN(BaseProtocol):
             try:
                 segment_bytes, _ = self.socket.read(buffer_size)
                 segment = protocol.RDTPSegment.from_bytes(segment_bytes)
-            except socket.timeout:
+            except (socket.timeout, struct.error) as error:
+                logging.error(error)
                 attempts += 1
                 continue
 

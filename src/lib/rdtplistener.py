@@ -1,4 +1,5 @@
 from socket import *
+import struct
 from lib.InitialMessage import InitialMessage
 from lib.rdtpstream import RDTPStream
 import logging
@@ -17,10 +18,17 @@ class RDTPListener():
                 message, client_address = self.welcoming_socket.read(2048)
             except timeout:
                 continue
-            segment = RDTPSegment.from_bytes(message)
+
+            try:
+                segment = RDTPSegment.from_bytes(message)
+                initial_msg = InitialMessage.from_bytes(segment.data)
+            except struct.error as error:
+                logging.error(error)
+                continue
+
             logging.debug("Client request coming from: " + str(client_address))
             client_socket = RDTPStream.server_client_socket(client_address[0],client_address[1])
-            return InitialMessage.from_bytes(segment.data), client_socket, client_address
+            return initial_msg, client_socket, client_address
 
     def close(self):
         self.welcoming_socket.close()
