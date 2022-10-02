@@ -85,8 +85,8 @@ class GoBackN(BaseProtocol):
                 return
             # Re-send unacknowledged pkts
             attempts += 1
+            logging.debug(f"Timeout without no new ack, resending packets")
             for message in self.messages_not_acked:
-                logging.debug(f"Socket in host: {self.socket.host} and port: {self.socket.port} sending message with seq_num: {self.seq_num}")
                 self.socket.send(message.as_bytes())
 
     def read(self, buffer_size :int):
