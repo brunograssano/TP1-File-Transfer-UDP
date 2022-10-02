@@ -32,14 +32,17 @@ class BaseProtocol:
         self.socket.settimeout(const.CLIENT_HANDSHAKE_TIMEOUT)
         while attempts < const.TIMEOUT_RETRY_ATTEMPTS:
             try:
+                logging.debug(f"Socket in host: {self.socket.host} and port: {self.socket.port} sending first message of handshake")
                 self.socket.send(segment.as_bytes())
                 answer, address = self.socket.read(const.MSG_SIZE)
+                logging.debug(f"Socket in host: {self.socket.host} and port: {self.socket.port} received second message of handshake")
                 self.socket.setaddress(address)
                 response_segment = RDTPSegment.from_bytes(answer)
                 initial_msg_response = InitialMessage.from_bytes(response_segment.data)
 
                 third_handshake_step_header = RDTPHeader(0, 0, response_segment.header.fin)
                 third_handshake_step_segment = RDTPSegment(bytearray([]), third_handshake_step_header)
+                logging.debug(f"Socket in host: {self.socket.host} and port: {self.socket.port} sending third message of handshake")
                 self.socket.send(third_handshake_step_segment.as_bytes())
 
                 return not response_segment.header.fin, initial_msg_response.file_size
@@ -67,8 +70,10 @@ class BaseProtocol:
         self.socket.settimeout(const.SERVER_HANDSHAKE_TIMEOUT)
         while attempts < const.TIMEOUT_RETRY_ATTEMPTS:
             try:
+                logging.debug(f"Socket in host: {self.socket.host} and port: {self.socket.port} sending second message of handshake")
                 self.socket.send(segment.as_bytes())
                 answer, _ = self.socket.read(const.MSG_SIZE)
+                logging.debug(f"Socket in host: {self.socket.host} and port: {self.socket.port} sending third message of handshake")
                 segment = RDTPSegment.from_bytes(answer)
                 return segment
 
@@ -83,6 +88,7 @@ class BaseProtocol:
         logging.debug("Ending connection")
         header = RDTPHeader(self.seq_num, self.ack_num, True)
         segment = RDTPSegment(bytearray([]), header)
+        logging.debug(f"Socket in host: {self.socket.host} and port: {self.socket.port} sending message to end connection")
         self.socket.send(segment.as_bytes())
 
         self.socket.close()
