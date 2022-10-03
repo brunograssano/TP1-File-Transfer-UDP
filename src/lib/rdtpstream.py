@@ -51,7 +51,8 @@ class RDTPStream():
     def read(self, buffersize: int, wait=True):
         message, clientAddress = (None, None)
         ready = select.select(
-            [self.socket], [], [], const.CLIENT_STOP_AND_WAIT_TIMEOUT if wait else 0)
+            [self.socket], [], [],
+            const.CLIENT_STOP_AND_WAIT_TIMEOUT if wait else 0)
         if ready[0]:
             message, clientAddress = self.socket.recvfrom(
                 buffersize + RDTPHeader.size())

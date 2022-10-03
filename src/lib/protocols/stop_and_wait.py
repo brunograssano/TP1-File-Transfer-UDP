@@ -25,7 +25,9 @@ class StopAndWait(BaseProtocol):
         while attempts < const.TIMEOUT_RETRY_ATTEMPTS:
             try:
                 logging.debug(
-                    f"Socket in host: {self.socket.host} and port: {self.socket.port} sending message with seq_num: {self.seq_num}")
+                    f"Socket in host: {self.socket.host} and port: \
+                        {self.socket.port} sending message with seq_num: \
+                            {self.seq_num}")
                 self.socket.send(message.as_bytes())
                 ack_bytes, _ = self.socket.read(const.MSG_SIZE)
                 ack_segment = protocol.RDTPSegment.from_bytes(ack_bytes)
@@ -42,4 +44,3 @@ class StopAndWait(BaseProtocol):
 
         self.finished = True
         raise LostConnectionError("Lost connection error")
-

@@ -1,6 +1,5 @@
 import os
 import signal
-import sys
 import logging
 import lib.constants as constants
 from lib.parser import download_parser

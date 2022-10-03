@@ -1,10 +1,10 @@
 import lib.constants as constants
 import logging
 import os
-import shutil
+
 import threading
-from lib.InitialMessage import *
-from lib.rdtpstream import *
+from lib.InitialMessage import InitialMessage
+from lib.rdtpstream import RDTPStream
 from lib.file_manager import FileManager
 from lib.protocols.base_protocol import LostConnectionError
 from lib.protocols.go_back_n import GoBackN

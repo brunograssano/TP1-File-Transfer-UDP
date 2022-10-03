@@ -1,4 +1,4 @@
-from socket import *
+from socket import timeout
 import struct
 from lib.InitialMessage import InitialMessage
 from lib.rdtpstream import RDTPStream

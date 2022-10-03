@@ -14,7 +14,8 @@ class FileManager:
         * mode: 'rb','wb'
 
 
-        Logs in error mode and raises FileNotFoundError if the file could not be opened
+        Logs in error mode and raises FileNotFoundError if the file
+        could not be opened
         """
         self.file_name = file_name
         self.mode = mode
@@ -27,7 +28,8 @@ class FileManager:
             raise FileManagerError("Error opening file")
 
     def close(self):
-        """Closes the file, must be called to free resources and to make sure the last bytes were written to the disk"""
+        """Closes the file, must be called to free resources and
+         to make sure the last bytes were written to the disk"""
         self.file.close()
         logging.debug("Closed file with name: " + self.file_name)
 
@@ -42,7 +44,8 @@ class FileManager:
         try:
             data = self.file.read(read_size)
             logging.debug(
-                f"Reading {read_size} bytes from file with name: {self.file_name}")
+                f"Reading {read_size} bytes from file with name:\
+                     {self.file_name}")
             return data
         except Exception:
             logging.error(

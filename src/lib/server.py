@@ -1,6 +1,4 @@
-from http import client
 import logging
-from socket import *
 from lib.DownloadClientThread import DownloadClientThread
 from lib.rdtplistener import RDTPListener
 from threading import Lock
@@ -21,7 +19,8 @@ class Server:
     def start_server(self):
         logging.info("Ready to receive connections")
         while True:
-            initial_message, client_socket, client_address = self.server_socket.listen()
+            initial_message, client_socket, client_address =\
+                 self.server_socket.listen()
             self.add_client(initial_message, client_address, client_socket)
 
     def add_client(self, initial_message, client_address, client_socket):
@@ -37,7 +36,8 @@ class Server:
                     client_socket)
             else:
                 thread = DownloadClientThread(
-                    self, initial_message, client_address, self.storage, client_socket)
+                    self, initial_message, client_address, self.storage,
+                    client_socket)
 
             self.clients[(client_address[0], client_address[1])] = True
             self.client_threads.append(thread)
