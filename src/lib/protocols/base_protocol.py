@@ -1,10 +1,8 @@
-from cmath import e
 import logging
 from socket import timeout
 import struct
 import lib.constants as const
 import socket
-from socket import socket
 from lib.InitialMessage import InitialMessage
 from lib.rdtpstream import RDTPStream
 from lib.segments.RDTPSegment import RDTPSegment
@@ -24,7 +22,7 @@ class BaseProtocol:
         self.finished = False
 
     def send_handshake(self, file_size, file_name, is_upload):
-        if(is_upload):
+        if is_upload:
             initial_msg = InitialMessage.upload_message(
                 file_size, file_name, self.is_stop_and_wait)
         else:
@@ -39,11 +37,13 @@ class BaseProtocol:
         while attempts < const.TIMEOUT_RETRY_ATTEMPTS:
             try:
                 logging.debug(
-                    f"Socket in host: {self.socket.host} and port: {self.socket.port} sending first message of handshake")
+                    f"Socket in host: {self.socket.host} and port: \
+                    {self.socket.port} sending first message of handshake")
                 self.socket.send(segment.as_bytes())
                 answer, address = self.socket.read(const.MSG_SIZE)
                 logging.debug(
-                    f"Socket in host: {self.socket.host} and port: {self.socket.port} received second message of handshake")
+                    f"Socket in host: {self.socket.host} and port: \
+                    {self.socket.port} received second message of handshake")
                 self.socket.setaddress(address)
                 response_segment = RDTPSegment.from_bytes(answer)
                 initial_msg_response = InitialMessage.from_bytes(
@@ -54,10 +54,12 @@ class BaseProtocol:
                 third_handshake_step_segment = RDTPSegment(
                     bytearray([]), third_handshake_step_header)
                 logging.debug(
-                    f"Socket in host: {self.socket.host} and port: {self.socket.port} sending third message of handshake")
+                    f"Socket in host: {self.socket.host} and port: \
+                    {self.socket.port} sending third message of handshake")
                 self.socket.send(third_handshake_step_segment.as_bytes())
 
-                return not response_segment.header.fin, initial_msg_response.file_size
+                return not response_segment.header.fin,\
+                    initial_msg_response.file_size
 
             except (timeout, struct.error) as error:
                 logging.debug(f"Timeout or conversion error {error}")
@@ -74,7 +76,7 @@ class BaseProtocol:
             file_name,
             is_upload):
 
-        if(is_upload):
+        if is_upload:
             initial_msg = InitialMessage.upload_message(
                 file_size, file_name, self.is_stop_and_wait)
         else:
@@ -90,11 +92,14 @@ class BaseProtocol:
         while attempts < const.TIMEOUT_RETRY_ATTEMPTS:
             try:
                 logging.debug(
-                    f"Socket in host: {self.socket.host} and port: {self.socket.port} sending second message of handshake")
+                    f"Socket in host: {self.socket.host} and port: \
+                        {self.socket.port} sending second\
+                             message of handshake")
                 self.socket.send(segment.as_bytes())
                 answer, _ = self.socket.read(const.MSG_SIZE)
                 logging.debug(
-                    f"Socket in host: {self.socket.host} and port: {self.socket.port} sending third message of handshake")
+                    f"Socket in host: {self.socket.host} and port: \
+                        {self.socket.port} sending third message of handshake")
                 segment = RDTPSegment.from_bytes(answer)
                 return segment
 
@@ -165,7 +170,9 @@ class BaseProtocol:
                 fin=self.finished)
             ack_message = RDTPSegment(data=bytearray([]), header=head)
             logging.debug(
-                f"Socket in host: {self.socket.host} and port: {self.socket.port} sending message with ack: {self.ack_num}")
+                f"Socket in host: {self.socket.host} and port: \
+                    {self.socket.port} sending message\
+                         with ack: {self.ack_num}")
             self.socket.send(ack_message.as_bytes())
 
             if self.finished:
