@@ -80,7 +80,7 @@ class GoBackN(BaseProtocol):
             if ack_bytes is not None:
                 self.remove_in_flight_messages(protocol.RDTPSegment.from_bytes(ack_bytes))
         except (socket.timeout, struct.error) as error:
-            logging.error(f"Timeout or conversion error {error}")
+            logging.debug(f"Timeout or conversion error {error}")
             if len(self.messages_not_acked) == 0:
                 return
             # Re-send unacknowledged pkts
@@ -97,7 +97,7 @@ class GoBackN(BaseProtocol):
                 segment_bytes, _ = self.socket.read(buffer_size)
                 segment = protocol.RDTPSegment.from_bytes(segment_bytes)
             except (socket.timeout, struct.error) as error:
-                logging.error(f"Timeout or conversion error {error}")
+                logging.debug(f"Timeout or conversion error {error}")
                 attempts += 1
                 continue
 
@@ -108,7 +108,6 @@ class GoBackN(BaseProtocol):
 
 
             self.finished = segment.header.is_fin()
-            print("Finished in read go back n: {}".format(self.finished))
             head = rdtp_header.RDTPHeader(seq_num=self.seq_num, ack_num=self.ack_num, fin=self.finished)
             ack_message = protocol.RDTPSegment(data=bytearray([]), header=head)
             logging.debug(f"Socket in host: {self.socket.host} and port: {self.socket.port} sending message with ack: {self.ack_num}")
