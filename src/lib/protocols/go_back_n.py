@@ -24,14 +24,14 @@ class GoBackN(BaseProtocol):
         If the in-flight list is full, awaits ACKs for packages in the list.
         """
         #Create packet
-        self.seq_num += 1
-        head = rdtp_header.RDTPHeader(seq_num=self.seq_num, ack_num=self.ack_num, fin=False)
-        message = protocol.RDTPSegment(data=data, header=head)
         sent = False
-
 
         #If the window isnt full, send packet
         if len(self.messages_not_acked) < self.window_size:
+            self.seq_num += 1
+            head = rdtp_header.RDTPHeader(seq_num=self.seq_num, ack_num=self.ack_num, fin=False)
+            message = protocol.RDTPSegment(data=data, header=head)
+
             logging.debug(f"Window isnt full, sending packet to host: {self.socket.host} and port: {self.socket.port} sending message with seq_num: {self.seq_num}")
             self.socket.send(message.as_bytes())
             self.messages_not_acked.append(message)
@@ -52,19 +52,20 @@ class GoBackN(BaseProtocol):
                 self.await_ack()
             # reattempt to send after wait
             logging.debug(f"Window was full, sending packet to host: {self.socket.host} and port: {self.socket.port} sending message with seq_num: {self.seq_num}")
-            self.socket.send(message.as_bytes())
-            self.messages_not_acked.append(message)
-
+            self.send(data)
 
     def remove_in_flight_messages(self, ack_segment):
         """
         Process a packet. If it's an ACK, remove it and all previous ones
         from the message_not_acked list and return True.
         """
+
+        self.finished = ack_segment.header.is_fin()
         for i in range(len(self.messages_not_acked)):
             if self.messages_not_acked[i].header.seq_num == ack_segment.header.ack_num:
-                logging.debug(f"acked packet up to num: {i}")
                 self.messages_not_acked = self.messages_not_acked[i + 1 :]
+                logging.debug(f"Acked message {ack_segment.header.ack_num} and messages not acked {len(self.messages_not_acked)}")
+                self.ack_num = ack_segment.header.ack_num
                 return True
         return False
 
@@ -74,17 +75,15 @@ class GoBackN(BaseProtocol):
         Waits and processes an ACK packet. If a timeout occurs without any new
         ACK from the in-flight list, resend the packets in the list.
         """
-        attempts = 0
         try:
             ack_bytes, _ = self.socket.read(const.MSG_SIZE)
-            if ack_bytes is not None and self.remove_in_flight_messages(protocol.RDTPSegment.from_bytes(ack_bytes)):
-                self.tries = 0
+            if ack_bytes is not None:
+                self.remove_in_flight_messages(protocol.RDTPSegment.from_bytes(ack_bytes))
         except (socket.timeout, struct.error) as error:
             logging.error(f"Timeout or conversion error {error}")
-            if not self.messages_not_acked:
+            if len(self.messages_not_acked) == 0:
                 return
             # Re-send unacknowledged pkts
-            attempts += 1
             logging.debug(f"Timeout without no new ack, resending packets")
             for message in self.messages_not_acked:
                 self.socket.send(message.as_bytes())
@@ -107,16 +106,26 @@ class GoBackN(BaseProtocol):
                 self.ack_num = segment.header.seq_num
                 is_new_data = True
 
-            head = rdtp_header.RDTPHeader(seq_num=self.seq_num, ack_num=self.ack_num, fin=False)
+
+            self.finished = segment.header.is_fin()
+            print("Finished in read go back n: {}".format(self.finished))
+            head = rdtp_header.RDTPHeader(seq_num=self.seq_num, ack_num=self.ack_num, fin=self.finished)
             ack_message = protocol.RDTPSegment(data=bytearray([]), header=head)
             logging.debug(f"Socket in host: {self.socket.host} and port: {self.socket.port} sending message with ack: {self.ack_num}")
             self.socket.send(ack_message.as_bytes())
+
+            if self.finished:
+                return None
+
             if is_new_data:
                 return segment.data
 
+        self.finished = True
         raise LostConnectionError("Lost connection error")
 
     def close(self):
-        while len(self.messages_not_acked) != 0:
+        attempts = 0
+        while len(self.messages_not_acked) != 0 and attempts < const.TIMEOUT_RETRY_ATTEMPTS:
+            attempts += 1
             self.await_ack()
         super().close()

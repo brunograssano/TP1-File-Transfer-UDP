@@ -18,6 +18,7 @@ class BaseProtocol:
         self.is_stop_and_wait = is_stop_and_wait
         self.seq_num = 0
         self.ack_num = 0
+        self.finished = False
 
     def send_handshake(self, file_size, file_name, is_upload):
         if(is_upload):
@@ -51,7 +52,8 @@ class BaseProtocol:
                 logging.error(f"Timeout or conversion error {error}")
                 attempts += 1
                 continue 
-        
+
+        self.finished = True
         raise LostConnectionError("Lost connection error")
 
 
@@ -82,16 +84,41 @@ class BaseProtocol:
                 attempts += 1
                 continue
 
+        self.finished = True
         raise LostConnectionError("Lost connection error")
 
     def close(self):
-        logging.debug("Ending connection")
-        header = RDTPHeader(self.seq_num, self.ack_num, True)
-        segment = RDTPSegment(bytearray([]), header)
-        logging.debug(f"Socket in host: {self.socket.host} and port: {self.socket.port} sending message to end connection")
-        self.socket.send(segment.as_bytes())
+        attempts = 0
+        if self.finished:
+            logging.debug("Ending connection, sending fin")
+            header = RDTPHeader(self.seq_num, self.ack_num, self.finished)
+            segment = RDTPSegment(bytearray([]), header)
+            self.socket.send(segment.as_bytes())
+            self.socket.close()
+            return
+
+        self.finished = True
+        while attempts < const.TIMEOUT_RETRY_ATTEMPTS:
+            try:
+                logging.debug("Ending connection, sending fin")
+                header = RDTPHeader(self.seq_num, self.ack_num, self.finished)
+                segment = RDTPSegment(bytearray([]), header)
+                self.socket.send(segment.as_bytes())
+
+                logging.debug("Ending connection, reading fin")
+                answer, _ = self.socket.read(const.MSG_SIZE)
+                segment = RDTPSegment.from_bytes(answer)
+                if segment.header.is_fin():
+                    self.socket.close()
+                    return
+
+            except (timeout, struct.error) as error:
+                logging.error(f"Timeout or conversion error {error}")
+                attempts += 1
+                continue
 
         self.socket.close()
+
 
     def send(self, data):
         raise NotImplementedError()
@@ -99,7 +126,5 @@ class BaseProtocol:
     def read(self, buffer_size :int):
         raise NotImplementedError()
 
-
-
-
-
+    def is_finished(self):
+        return self.finished

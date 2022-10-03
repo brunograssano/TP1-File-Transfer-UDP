@@ -63,8 +63,8 @@ class DownloadClientThread(threading.Thread):
             logging.error("Error with file manager, finishing connection")
         except LostConnectionError:            
             logging.error("Lost connection to client. ")
-        except Exception:            
-            logging.error("Closing error. ")
+        except Exception as e:
+            logging.error("Closing error. {}".format(e))
         finally:
             if file is not None:
                 file.close()
