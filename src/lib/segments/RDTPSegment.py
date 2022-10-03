@@ -1,6 +1,7 @@
 import lib.segments.headers.RDTPHeader as h
 from lib.segments.headers.RDTPHeader import RDTPHeader
 
+
 class RDTPSegment:
     def __init__(self, data, header):
         self.header: h.RDTPHeader = header
@@ -15,7 +16,6 @@ class RDTPSegment:
 
     def get_data(self):
         return self.data
-
 
     @staticmethod
     def from_bytes(bytes):

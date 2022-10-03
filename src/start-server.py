@@ -5,12 +5,14 @@ from lib.parser import server_parser
 from lib.server import Server
 from lib.log import set_up_logger
 
+
 class SignalException(Exception):
     pass
 
 
 def signal_handler(sig, frame):
     raise SignalException()
+
 
 if __name__ == '__main__':
 
@@ -22,7 +24,7 @@ if __name__ == '__main__':
     server = None
     try:
         logging.info("Starting server")
-        server = Server(args.host[0],args.port[0],args.storage[0])
+        server = Server(args.host[0], args.port[0], args.storage[0])
         server.start_server()
     except SignalException:
         logging.info("Signal error, closing server")
@@ -30,4 +32,3 @@ if __name__ == '__main__':
         if server is not None:
             server.close()
         logging.info("Closed server")
-

@@ -1,6 +1,4 @@
-from http import client
 import logging
-from socket import *
 from lib.DownloadClientThread import DownloadClientThread
 from lib.rdtplistener import RDTPListener
 from threading import Lock
@@ -8,19 +6,21 @@ from threading import Lock
 
 from lib.UploadClientThread import UploadClientThread
 
+
 class Server:
 
-    def __init__(self,server_name: str, server_port: int, storage : str):
+    def __init__(self, server_name: str, server_port: int, storage: str):
         self.clients = {}
         self.client_threads = []
         self.client_mutex = Lock()
         self.storage = storage
-        self.server_socket = RDTPListener(server_name,server_port)
+        self.server_socket = RDTPListener(server_name, server_port)
 
     def start_server(self):
         logging.info("Ready to receive connections")
         while True:
-            initial_message, client_socket, client_address = self.server_socket.listen()
+            initial_message, client_socket, client_address =\
+                 self.server_socket.listen()
             self.add_client(initial_message, client_address, client_socket)
 
     def add_client(self, initial_message, client_address, client_socket):
@@ -28,9 +28,16 @@ class Server:
         if (client_address[0], client_address[1]) not in self.clients:
             logging.info("Received a new client request")
             if initial_message.is_upload():
-                thread = UploadClientThread(self, initial_message, client_address, self.storage, client_socket)
+                thread = UploadClientThread(
+                    self,
+                    initial_message,
+                    client_address,
+                    self.storage,
+                    client_socket)
             else:
-                thread = DownloadClientThread(self, initial_message, client_address, self.storage, client_socket)
+                thread = DownloadClientThread(
+                    self, initial_message, client_address, self.storage,
+                    client_socket)
 
             self.clients[(client_address[0], client_address[1])] = True
             self.client_threads.append(thread)

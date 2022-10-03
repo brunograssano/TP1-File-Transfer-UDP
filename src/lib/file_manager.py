@@ -1,7 +1,9 @@
 import logging
 
+
 class FileManagerError(Exception):
     pass
+
 
 class FileManager:
 
@@ -12,12 +14,13 @@ class FileManager:
         * mode: 'rb','wb'
 
 
-        Logs in error mode and raises FileNotFoundError if the file could not be opened
+        Logs in error mode and raises FileNotFoundError if the file
+        could not be opened
         """
         self.file_name = file_name
         self.mode = mode
         try:
-            self.file = open(file_name,mode)
+            self.file = open(file_name, mode)
             logging.debug("Opened file with name: " + file_name)
         except Exception as e:
             logging.error(e)
@@ -25,7 +28,8 @@ class FileManager:
             raise FileManagerError("Error opening file")
 
     def close(self):
-        """Closes the file, must be called to free resources and to make sure the last bytes were written to the disk"""
+        """Closes the file, must be called to free resources and
+         to make sure the last bytes were written to the disk"""
         self.file.close()
         logging.debug("Closed file with name: " + self.file_name)
 
@@ -39,10 +43,14 @@ class FileManager:
         """
         try:
             data = self.file.read(read_size)
-            logging.debug(f"Reading {read_size} bytes from file with name: {self.file_name}")
+            logging.debug(
+                f"Reading {read_size} bytes from file with name:\
+                     {self.file_name}")
             return data
         except Exception:
-            logging.error("Error reading from file with name: " + self.file_name)
+            logging.error(
+                "Error reading from file with name: " +
+                self.file_name)
             raise FileManagerError("Error reading from file")
 
     def write(self, data):
@@ -53,7 +61,8 @@ class FileManager:
         """
         try:
             self.file.write(data)
-            logging.debug(f"Wrote {len(data)} bytes to file with name: {self.file_name}")
+            logging.debug(
+                f"Wrote {len(data)} bytes to file with name: {self.file_name}")
         except Exception:
             logging.error("Error writing to file with name: " + self.file_name)
             raise FileManagerError("Error writing to file")
