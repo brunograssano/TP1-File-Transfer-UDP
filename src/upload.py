@@ -14,6 +14,7 @@ from lib.protocols.base_protocol import LostConnectionError
 import lib.constants as constants
 from lib.file_manager import FileManagerError
 
+
 class SignalException(Exception):
     pass
 
@@ -21,9 +22,15 @@ class SignalException(Exception):
 def signal_handler(sig, frame):
     raise SignalException()
 
-def upload(server_name: str, server_port: int, src:str, file_name: str, is_saw : bool):
 
-    file_path = os.path.join(src,file_name)
+def upload(
+        server_name: str,
+        server_port: int,
+        src: str,
+        file_name: str,
+        is_saw: bool):
+
+    file_path = os.path.join(src, file_name)
     if not os.path.isfile(file_path):
         logging.error(f"File in {file_path} does not exists")
         return
@@ -31,11 +38,11 @@ def upload(server_name: str, server_port: int, src:str, file_name: str, is_saw :
     file_size = os.path.getsize(file_path)
     logging.debug(f"Found file in {file_path} with size {file_size} bytes")
 
-    client_socket = RDTPStream.client_socket(server_name,server_port)
-    
+    client_socket = RDTPStream.client_socket(server_name, server_port)
+
     if is_saw:
         protocol = StopAndWait(client_socket)
-    else: 
+    else:
         protocol = GoBackN(client_socket)
 
     file = None
@@ -62,6 +69,7 @@ def upload(server_name: str, server_port: int, src:str, file_name: str, is_saw :
             file.close()
         protocol.close()
 
+
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
@@ -69,7 +77,12 @@ if __name__ == '__main__':
     set_up_logger(args, constants.UPLOAD_LOG_FILENAME)
     logging.info("Starting client")
     try:
-        upload(args.host[0],args.port[0],args.src[0],args.name[0],args.stop_and_wait)
+        upload(
+            args.host[0],
+            args.port[0],
+            args.src[0],
+            args.name[0],
+            args.stop_and_wait)
     except SignalException:
         logging.error("Signal error, closing download")
     logging.info("End of execution")

@@ -6,6 +6,7 @@ import lib.constants as const
 
 from lib.segments.headers.RDTPHeader import RDTPHeader
 
+
 class RDTPStream():
     def __init__(self, host, port):
         self.host = host
@@ -17,19 +18,19 @@ class RDTPStream():
 
     @staticmethod
     def server_welcoming_socket(host, port):
-        socket = RDTPStream(host,port)
-        socket.bind(("",port))
+        socket = RDTPStream(host, port)
+        socket.bind(("", port))
         return socket
 
     @staticmethod
     def server_client_socket(host, port):
-        socket = RDTPStream(host,port)
-        socket.bind(("",0))
+        socket = RDTPStream(host, port)
+        socket.bind(("", 0))
         return socket
 
     @staticmethod
     def client_socket(host, port):
-        return RDTPStream(host,port)
+        return RDTPStream(host, port)
 
     def settimeout(self, seconds):
         self.socket.settimeout(seconds)
@@ -47,11 +48,13 @@ class RDTPStream():
     def setblocking(self, flag):
         self.socket.setblocking(flag)
 
-    def read(self,buffersize :int, wait=True):
+    def read(self, buffersize: int, wait=True):
         message, clientAddress = (None, None)
-        ready = select.select([self.socket], [], [], const.CLIENT_STOP_AND_WAIT_TIMEOUT if wait else 0)
+        ready = select.select(
+            [self.socket], [], [], const.CLIENT_STOP_AND_WAIT_TIMEOUT if wait else 0)
         if ready[0]:
-            message, clientAddress = self.socket.recvfrom(buffersize + RDTPHeader.size())
+            message, clientAddress = self.socket.recvfrom(
+                buffersize + RDTPHeader.size())
         elif wait:
             raise socket.timeout
 

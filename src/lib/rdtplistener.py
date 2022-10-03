@@ -6,6 +6,7 @@ import logging
 
 from lib.segments.RDTPSegment import RDTPSegment
 
+
 class RDTPListener():
     def __init__(self, host, port):
         self.host = host
@@ -27,7 +28,8 @@ class RDTPListener():
                 continue
 
             logging.debug("Client request coming from: " + str(client_address))
-            client_socket = RDTPStream.server_client_socket(client_address[0],client_address[1])
+            client_socket = RDTPStream.server_client_socket(
+                client_address[0], client_address[1])
             return initial_msg, client_socket, client_address
 
     def close(self):

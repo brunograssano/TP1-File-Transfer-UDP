@@ -1,7 +1,8 @@
 import logging
 
+
 class CustomFormatter(logging.Formatter):
-    
+
     # COLOUR CONSTANTS
     COLOR_GREEN = '\033[92m'
     COLOR_BLUE = '\033[94m'
@@ -11,8 +12,7 @@ class CustomFormatter(logging.Formatter):
     FORMATS = {
         logging.DEBUG: f"%(asctime)s - {COLOR_GREEN} [ %(levelname)s ] {COLOR_END} - %(message)s (%(filename)s:%(lineno)d)",
         logging.INFO: f"%(asctime)s - {COLOR_BLUE} [ %(levelname)s ] {COLOR_END} - %(message)s (%(filename)s:%(lineno)d)",
-        logging.ERROR: f"%(asctime)s - {COLOR_RED} [ %(levelname)s ] {COLOR_END} - %(message)s (%(filename)s:%(lineno)d)"
-    }
+        logging.ERROR: f"%(asctime)s - {COLOR_RED} [ %(levelname)s ] {COLOR_END} - %(message)s (%(filename)s:%(lineno)d)"}
 
     def format(self, record):
         log_format = self.FORMATS.get(record.levelno)
@@ -28,7 +28,8 @@ def calculate_verbosity(args):
     else:
         return logging.INFO
 
-def set_up_logger(args, log_name:str):
+
+def set_up_logger(args, log_name: str):
     verbosity = calculate_verbosity(args)
     logging.basicConfig(
         filename=log_name,

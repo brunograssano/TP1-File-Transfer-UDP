@@ -8,6 +8,7 @@ import lib.segments.headers.RDTPHeader as rdtp_header
 from lib.protocols.base_protocol import BaseProtocol, LostConnectionError
 import lib.constants as const
 
+
 class StopAndWait(BaseProtocol):
     def __init__(self, socket):
         super().__init__(socket, True)
@@ -15,12 +16,16 @@ class StopAndWait(BaseProtocol):
 
     def send(self, data):
         self.seq_num += 1
-        head = rdtp_header.RDTPHeader(seq_num=self.seq_num, ack_num=self.ack_num, fin=False)
+        head = rdtp_header.RDTPHeader(
+            seq_num=self.seq_num,
+            ack_num=self.ack_num,
+            fin=False)
         message = protocol.RDTPSegment(data=data, header=head)
         attempts = 0
         while attempts < const.TIMEOUT_RETRY_ATTEMPTS:
             try:
-                logging.debug(f"Socket in host: {self.socket.host} and port: {self.socket.port} sending message with seq_num: {self.seq_num}")
+                logging.debug(
+                    f"Socket in host: {self.socket.host} and port: {self.socket.port} sending message with seq_num: {self.seq_num}")
                 self.socket.send(message.as_bytes())
                 ack_bytes, _ = self.socket.read(const.MSG_SIZE)
                 ack_segment = protocol.RDTPSegment.from_bytes(ack_bytes)
@@ -38,8 +43,7 @@ class StopAndWait(BaseProtocol):
         self.finished = True
         raise LostConnectionError("Lost connection error")
 
-
-    def read(self, buffer_size :int):
+    def read(self, buffer_size: int):
         self.seq_num += 1
         attempts = 0
         is_new_data = False
@@ -60,9 +64,13 @@ class StopAndWait(BaseProtocol):
             if self.finished:
                 return None
 
-            head = rdtp_header.RDTPHeader(seq_num=self.seq_num, ack_num=self.ack_num, fin=self.finished)
+            head = rdtp_header.RDTPHeader(
+                seq_num=self.seq_num,
+                ack_num=self.ack_num,
+                fin=self.finished)
             ack_message = protocol.RDTPSegment(data=bytearray([]), header=head)
-            logging.debug(f"Socket in host: {self.socket.host} and port: {self.socket.port} sending message with ack: {self.ack_num}")
+            logging.debug(
+                f"Socket in host: {self.socket.host} and port: {self.socket.port} sending message with ack: {self.ack_num}")
             self.socket.send(ack_message.as_bytes())
             if is_new_data:
                 return segment.data

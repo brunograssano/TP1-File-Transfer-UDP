@@ -12,15 +12,23 @@ from lib.protocols.go_back_n import GoBackN
 import lib.constants as constants
 from lib.protocols.base_protocol import LostConnectionError
 from lib.file_manager import FileManagerError
+
+
 class UploadClientThread(threading.Thread):
 
-    def __init__(self, server, initial_message : InitialMessage, client_address, storage : str, client_socket: RDTPStream):
+    def __init__(
+            self,
+            server,
+            initial_message: InitialMessage,
+            client_address,
+            storage: str,
+            client_socket: RDTPStream):
         threading.Thread.__init__(self)
         self.file_size = initial_message.get_file_size()
         self.filename = initial_message.get_filename()
         self.storage = storage
         self.client_address = client_address
-        self.filepath =  os.path.join(self.storage, self.filename)
+        self.filepath = os.path.join(self.storage, self.filename)
         self.server = server
         self.socket = client_socket
         self.running = True
@@ -46,13 +54,15 @@ class UploadClientThread(threading.Thread):
 
         file = None
         try:
-            segment = self.protocol.listen_to_handshake(self.file_size < free, self.file_size, self.filename, True)
+            segment = self.protocol.listen_to_handshake(
+                self.file_size < free, self.file_size, self.filename, True)
             if free < self.file_size:
                 logging.error("There is not enough space for file in disk")
                 return
 
-            logging.debug(f"Receiving file {self.filename} of {self.file_size} from client")
-            file = FileManager(self.filepath,"wb")
+            logging.debug(
+                f"Receiving file {self.filename} of {self.file_size} from client")
+            file = FileManager(self.filepath, "wb")
 
             write = 0
             while not self.protocol.is_finished():
@@ -77,4 +87,6 @@ class UploadClientThread(threading.Thread):
                 self.protocol.close()
                 self.running = False
             self.close_lock.release()
-            self.server.remove_client(self.client_address[0], self.client_address[1])
+            self.server.remove_client(
+                self.client_address[0],
+                self.client_address[1])

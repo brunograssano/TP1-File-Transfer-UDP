@@ -10,6 +10,7 @@ import lib.segments.RDTPSegment as protocol
 import lib.segments.headers.RDTPHeader as rdtp_header
 from lib.protocols.base_protocol import BaseProtocol, LostConnectionError
 
+
 class GoBackN(BaseProtocol):
     def __init__(self, socket):
         super().__init__(socket, False)
@@ -23,16 +24,18 @@ class GoBackN(BaseProtocol):
         If an ACK is not received, the packet is added to the in-flight list.
         If the in-flight list is full, awaits ACKs for packages in the list.
         """
-        #Create packet
+        # Create packet
         sent = False
 
-        #If the window isnt full, send packet
+        # If the window isnt full, send packet
         if len(self.messages_not_acked) < self.window_size:
             self.seq_num += 1
-            head = rdtp_header.RDTPHeader(seq_num=self.seq_num, ack_num=self.ack_num, fin=False)
+            head = rdtp_header.RDTPHeader(
+                seq_num=self.seq_num, ack_num=self.ack_num, fin=False)
             message = protocol.RDTPSegment(data=data, header=head)
 
-            logging.debug(f"Window isnt full, sending packet to host: {self.socket.host} and port: {self.socket.port} sending message with seq_num: {self.seq_num}")
+            logging.debug(
+                f"Window isnt full, sending packet to host: {self.socket.host} and port: {self.socket.port} sending message with seq_num: {self.seq_num}")
             self.socket.send(message.as_bytes())
             self.messages_not_acked.append(message)
             sent = True
@@ -51,7 +54,8 @@ class GoBackN(BaseProtocol):
             if len(self.messages_not_acked) == self.window_size:
                 self.await_ack()
             # reattempt to send after wait
-            logging.debug(f"Window was full, sending packet to host: {self.socket.host} and port: {self.socket.port} sending message with seq_num: {self.seq_num}")
+            logging.debug(
+                f"Window was full, sending packet to host: {self.socket.host} and port: {self.socket.port} sending message with seq_num: {self.seq_num}")
             self.send(data)
 
     def remove_in_flight_messages(self, ack_segment):
@@ -63,12 +67,12 @@ class GoBackN(BaseProtocol):
         self.finished = ack_segment.header.is_fin()
         for i in range(len(self.messages_not_acked)):
             if self.messages_not_acked[i].header.seq_num == ack_segment.header.ack_num:
-                self.messages_not_acked = self.messages_not_acked[i + 1 :]
-                logging.debug(f"Acked message {ack_segment.header.ack_num} and messages not acked {len(self.messages_not_acked)}")
+                self.messages_not_acked = self.messages_not_acked[i + 1:]
+                logging.debug(
+                    f"Acked message {ack_segment.header.ack_num} and messages not acked {len(self.messages_not_acked)}")
                 self.ack_num = ack_segment.header.ack_num
                 return True
         return False
-
 
     def await_ack(self):
         """
@@ -78,7 +82,8 @@ class GoBackN(BaseProtocol):
         try:
             ack_bytes, _ = self.socket.read(const.MSG_SIZE)
             if ack_bytes is not None:
-                self.remove_in_flight_messages(protocol.RDTPSegment.from_bytes(ack_bytes))
+                self.remove_in_flight_messages(
+                    protocol.RDTPSegment.from_bytes(ack_bytes))
         except (socket.timeout, struct.error) as error:
             logging.debug(f"Timeout or conversion error {error}")
             if len(self.messages_not_acked) == 0:
@@ -88,7 +93,7 @@ class GoBackN(BaseProtocol):
             for message in self.messages_not_acked:
                 self.socket.send(message.as_bytes())
 
-    def read(self, buffer_size :int):
+    def read(self, buffer_size: int):
         self.seq_num += 1
         attempts = 0
         is_new_data = False
@@ -101,16 +106,18 @@ class GoBackN(BaseProtocol):
                 attempts += 1
                 continue
 
-
             if segment.header.seq_num == (self.ack_num + 1):
                 self.ack_num = segment.header.seq_num
                 is_new_data = True
 
-
             self.finished = segment.header.is_fin()
-            head = rdtp_header.RDTPHeader(seq_num=self.seq_num, ack_num=self.ack_num, fin=self.finished)
+            head = rdtp_header.RDTPHeader(
+                seq_num=self.seq_num,
+                ack_num=self.ack_num,
+                fin=self.finished)
             ack_message = protocol.RDTPSegment(data=bytearray([]), header=head)
-            logging.debug(f"Socket in host: {self.socket.host} and port: {self.socket.port} sending message with ack: {self.ack_num}")
+            logging.debug(
+                f"Socket in host: {self.socket.host} and port: {self.socket.port} sending message with ack: {self.ack_num}")
             self.socket.send(ack_message.as_bytes())
 
             if self.finished:
@@ -124,7 +131,8 @@ class GoBackN(BaseProtocol):
 
     def close(self):
         attempts = 0
-        while len(self.messages_not_acked) != 0 and attempts < const.TIMEOUT_RETRY_ATTEMPTS:
+        while len(
+                self.messages_not_acked) != 0 and attempts < const.TIMEOUT_RETRY_ATTEMPTS:
             attempts += 1
             self.await_ack()
         super().close()
