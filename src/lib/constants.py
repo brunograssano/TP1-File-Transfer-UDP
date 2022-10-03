@@ -5,7 +5,7 @@ DEFAULT_HOST = "localhost"
 # DEFAULT FILE FOLDERS
 DEFAULT_STORAGE = './storage'
 DEFAULT_SRC = '.'
-DEFAULT_DST = '.'
+DEFAULT_DST = './downloads'
 
 # LOG FILE
 DOWNLOAD_LOG_FILENAME = "download.log"

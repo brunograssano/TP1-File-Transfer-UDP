@@ -41,7 +41,7 @@ def download(server_name: str, server_port: int, dst:str, file_name: str, is_saw
             return
 
         file = FileManager(file_path, "wb")
-        while not self.protocol.is_finished():
+        while not protocol.is_finished():
             read_size = min(file_size, constants.MSG_SIZE)
             data = protocol.read(read_size)
             if file_size > 0 and data is not None:

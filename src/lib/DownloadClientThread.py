@@ -50,7 +50,7 @@ class DownloadClientThread(threading.Thread):
             if segment.header.fin:
                 return
 
-            file = FileManager(self.filename,"rb")
+            file = FileManager(file_path,"rb")
 
             while file_size > 0:
                 read_size = min(file_size, constants.MSG_SIZE)
