@@ -3,6 +3,7 @@ import logging
 from socket import timeout
 import struct
 import lib.constants as const
+import socket
 from socket import socket
 from lib.InitialMessage import InitialMessage
 from lib.rdtpstream import RDTPStream
@@ -147,7 +148,7 @@ class BaseProtocol:
         while attempts < const.TIMEOUT_RETRY_ATTEMPTS:
             try:
                 segment_bytes, _ = self.socket.read(buffer_size)
-                segment = protocol.RDTPSegment.from_bytes(segment_bytes)
+                segment = RDTPSegment.from_bytes(segment_bytes)
             except (socket.timeout, struct.error) as error:
                 logging.debug(f"Timeout or conversion error {error}")
                 attempts += 1
@@ -158,11 +159,11 @@ class BaseProtocol:
                 is_new_data = True
 
             self.finished = segment.header.is_fin()
-            head = rdtp_header.RDTPHeader(
+            head = RDTPHeader(
                 seq_num=self.seq_num,
                 ack_num=self.ack_num,
                 fin=self.finished)
-            ack_message = protocol.RDTPSegment(data=bytearray([]), header=head)
+            ack_message = RDTPSegment(data=bytearray([]), header=head)
             logging.debug(
                 f"Socket in host: {self.socket.host} and port: {self.socket.port} sending message with ack: {self.ack_num}")
             self.socket.send(ack_message.as_bytes())
