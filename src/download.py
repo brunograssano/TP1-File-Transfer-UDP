@@ -41,11 +41,12 @@ def download(server_name: str, server_port: int, dst:str, file_name: str, is_saw
             return
 
         file = FileManager(file_path, "wb")
-        while file_size > 0:
+        while not protocol.is_finished():
             read_size = min(file_size, constants.MSG_SIZE)
             data = protocol.read(read_size)
-            file.write(data)
-            file_size = file_size - read_size
+            if file_size > 0 and data is not None:
+                file.write(data)
+                file_size = file_size - read_size
 
         file.close()
         logging.info("Downloaded file")

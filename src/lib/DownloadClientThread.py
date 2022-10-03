@@ -50,7 +50,7 @@ class DownloadClientThread(threading.Thread):
             if segment.header.fin:
                 return
 
-            file = FileManager(self.filename,"rb")
+            file = FileManager(file_path,"rb")
 
             while file_size > 0:
                 read_size = min(file_size, constants.MSG_SIZE)
@@ -63,8 +63,8 @@ class DownloadClientThread(threading.Thread):
             logging.error("Error with file manager, finishing connection")
         except LostConnectionError:            
             logging.error("Lost connection to client. ")
-        except Exception:            
-            logging.error("Closing error. ")
+        except Exception as e:
+            logging.error("Closing error. {}".format(e))
         finally:
             if file is not None:
                 file.close()

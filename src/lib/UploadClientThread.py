@@ -55,10 +55,11 @@ class UploadClientThread(threading.Thread):
             file = FileManager(self.filepath,"wb")
 
             write = 0
-            while write < self.file_size:
+            while not self.protocol.is_finished():
                 data = self.protocol.read(constants.MSG_SIZE)
-                file.write(data)
-                write += constants.MSG_SIZE
+                if write < self.file_size and data is not None:
+                    file.write(data)
+                    write += constants.MSG_SIZE
 
             logging.info("End of client upload of file")
         except FileManagerError:
@@ -68,8 +69,8 @@ class UploadClientThread(threading.Thread):
             if file is not None:
                 file.close()
                 os.remove(self.filepath)
-        except Exception:            
-            logging.error("Closing error. ")
+        except Exception as e:
+            logging.error("Closing error. {}".format(e))
         finally:
             self.close_lock.acquire()
             if self.running:
